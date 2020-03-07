@@ -1,0 +1,44 @@
+{
+  "name": "@docile/documentation",
+  "version": "0.0.0",
+  "description": "To kindly generate a documentation",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node ./src/bin/docile",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vtabary/docile.git"
+  },
+  "author": "Vincent Tabary <github@tabary.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vtabary/docile/issues"
+  },
+  "homepage": "https://github.com/vtabary/docile#readme",
+  "devDependencies": {
+    "@types/decompress": "^4.2.3",
+    "@types/download": "^6.2.4",
+    "@types/ejs": "^3.0.1",
+    "@types/file-type": "^10.9.1",
+    "@types/fs-extra": "^8.1.0",
+    "@types/js-yaml": "^3.12.2",
+    "@types/marked": "^0.7.3",
+    "@types/node": "^13.9.0",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
+    "commander": "^4.1.1",
+    "download": "^7.1.0",
+    "ejs": "^3.0.1",
+    "find-up": "^4.1.0",
+    "fs-extra": "^8.1.0",
+    "globby": "^11.0.0",
+    "js-yaml": "^3.13.1",
+    "marked": "^0.8.0",
+    "simple-git": "^1.131.0"
+  }
+}

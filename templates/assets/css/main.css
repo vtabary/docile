@@ -1,0 +1,10 @@
+body {
+  font-family: sans serif;
+  font-size: 12px;
+}
+
+.docile__layout {
+  display: grid;
+  grid-template-columns: 200px auto;
+  grid-template-areas: "<summary> | <content>";
+}

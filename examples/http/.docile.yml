@@ -1,0 +1,11 @@
+documentation:
+  label: Documentation from Git
+  versions:
+    latest:
+      label: Latest
+      sources:
+        src1:
+          type: http
+          path: https://github.com/vtabary/docile/archive/master.zip
+build:
+  outDir: ./public/docs

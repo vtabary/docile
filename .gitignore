@@ -1,0 +1,5 @@
+dist
+node_modules
+examples/**/public
+examples/**/dist
+examples/**/.tmp
