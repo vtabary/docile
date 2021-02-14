@@ -1,19 +1,14 @@
 import simpleGit from 'simple-git/promise';
 import { resolve } from 'path';
-import { ISource, ISourceObject } from '../source';
-
-export interface IGitSourceObject extends ISourceObject {
-  branch?: string;
-}
+import { ISource } from '../source';
 
 export class GitSource implements ISource {
-  public id = 'unknown';
+  public readonly id: string;
   public path: string;
   public branch: string;
 
-  constructor(
-    data: IGitSourceObject
-  ) {
+  constructor(data: { id: string; path: string; branch?: string }) {
+    this.id = data.id;
     this.path = data.path;
     this.branch = data.branch || 'master';
   }

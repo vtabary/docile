@@ -1,5 +1,5 @@
 import marked from 'marked';
-import { File } from '../../file/file';
+import { readFile } from '../../file/file';
 
 export class MarkdownGenerator {
   public async generate(
@@ -8,7 +8,7 @@ export class MarkdownGenerator {
       baseUrl?: '/';
     }
   ): Promise<string> {
-    const content = await File.readFile(filePath);
+    const content = await readFile(filePath);
     return marked(content, {
       gfm: true,
       baseUrl: options.baseUrl || '/',

@@ -1,33 +1,17 @@
-import { resolve } from 'path';
-import { SourceBuilder } from '../../helpers/source-builder/source-builder';
-import { ISource, ISourceObject } from '../source/source';
-import { Utils } from '../../helpers/utils/utils';
-
-export interface IVersionObject {
-  label?: string;
-  sources: { [label: string]: ISourceObject };
-}
+import { ISource } from '../source/source';
 
 export class Version {
-  public sources: ISource[] = [];
-  public id: string = 'unknown';
-  public label: string = 'Untitled version';
+  public sources: ISource[];
+  public id: string;
+  public label: string;
 
-  public parse(data: IVersionObject): Version {
-    this.label = data.label || this.label;
-
-    this.sources = Object.keys(data.sources)
-      .map(key => {
-        const source = new SourceBuilder().parse(data.sources[key]);
-        source.id = key;
-        return source;
-      });
-    return this;
+  constructor(data: { id: string; label?: string; sources?: ISource[] }) {
+    this.id = data.id;
+    this.label = data.label || 'Untitled version';
+    this.sources = data.sources || [];
   }
 
-  public download(outDir: string): Promise<void> {
-    return Utils.promiseAllVoid(
-      this.sources.map(source => source.download(resolve(outDir, this.id)))
-    );
+  public async download(outDir: string): Promise<void> {
+    await Promise.all(this.sources.map((source) => source.download(outDir)));
   }
 }

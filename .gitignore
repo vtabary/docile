@@ -1,5 +1,6 @@
 dist
 node_modules
+coverage
 examples/**/public
 examples/**/dist
 examples/**/.tmp

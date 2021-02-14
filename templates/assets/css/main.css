@@ -6,5 +6,5 @@ body {
 .docile__layout {
   display: grid;
   grid-template-columns: 200px auto;
-  grid-template-areas: "<summary> | <content>";
+  grid-template-areas: '<summary> | <content>';
 }

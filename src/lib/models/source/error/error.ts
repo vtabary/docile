@@ -1,15 +1,16 @@
-import { ISource, ISourceObject } from '../source';
+import { ISource } from '../source';
 
 export class ErrorSource implements ISource {
-  public id = 'error';
-  public path: string = '';
+  public readonly id: string;
+  public readonly path = '';
 
-  public parse(data: ISourceObject): ErrorSource {
+  public constructor(data: { id: string }) {
+    this.id = data.id;
     return this;
   }
 
-  public download(outDir: string): Promise<void> {
-    console.log(`Can't copy the source ${this.id}`);
-    return Promise.resolve();
+  public async download(outDir: string): Promise<void> {
+    console.error(`Can't copy the source "${this.id}"`);
+    throw new Error(`Can't copy the source "${this.id}"`);
   }
 }

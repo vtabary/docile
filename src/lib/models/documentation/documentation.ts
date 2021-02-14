@@ -1,29 +1,15 @@
-import { Version, IVersionObject } from '../version/version';
-import { Utils } from '../../helpers/utils/utils';
-
-export interface IDocumentationObject {
-  label?: string;
-  versions: { [key: string]: IVersionObject };
-};
+import { Version } from '../version/version';
 
 export class Documentation {
-  public label = 'Untitled documentation';
+  public label: string;
   public versions: Version[] = [];
 
-  public parse(data: IDocumentationObject): Documentation {
-    this.label = data.label || this.label;
-    this.versions = Object.keys(data.versions)
-      .map(key => {
-        const version = new Version().parse(data.versions[key]);
-        version.id = key;
-        return version;
-      });
-    return this;
+  constructor(data: { label?: string; versions?: Version[] }) {
+    this.label = data.label || 'Untitled documentation';
+    this.versions = data.versions || [];
   }
 
-  public download(outDir: string): Promise<void> {
-    return Utils.promiseAllVoid(
-      this.versions.map(version => version.download(outDir))
-    );
+  public async download(outDir: string): Promise<void> {
+    await Promise.all(this.versions.map((version) => version.download(outDir)));
   }
 }

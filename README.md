@@ -63,8 +63,8 @@ npx ts-node ./src/bin/docile.ts generate -p ./examples/http
 
 ## TODO
 
-* Add specs
-* Support summary files
-* Export the templates into an other library
-* Support custom templates as a libraries
-* Add markdown function to import a part of a code file
+- Add specs
+- Support summary files
+- Export the templates into an other library
+- Support custom templates as a libraries
+- Add markdown function to import a part of a code file

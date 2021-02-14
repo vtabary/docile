@@ -1,18 +1,20 @@
 import { copy } from 'fs-extra';
 import { resolve } from 'path';
-import { ISource, ISourceObject } from '../source';
+import { ISource } from '../source';
 
-export interface ILocalSourceObject extends ISourceObject {
-
-}
+/**
+ * For test purpose only
+ */
+export const WRAPPERS = {
+  copy,
+};
 
 export class LocalSource implements ISource {
-  public id = 'unknown';
+  public readonly id: string;
   public path: string;
 
-  constructor(
-    data: ILocalSourceObject
-  ) {
+  constructor(data: { id: string; path: string }) {
+    this.id = data.id;
     this.path = data.path;
   }
 
@@ -22,6 +24,6 @@ export class LocalSource implements ISource {
     console.log(`Copying local files...
   from "${from}"
   to "${to}"`);
-    return copy(from, to);
+    return WRAPPERS.copy(from, to);
   }
 }
