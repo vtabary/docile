@@ -16,7 +16,7 @@ describe('ErrorSource', () => {
     });
 
     it('should throw', async () => {
-      await expect(source.download('/tmp')).rejects.toThrow(
+      await expect(source.download()).rejects.toThrow(
         `Can't copy the source "test"`
       );
     });

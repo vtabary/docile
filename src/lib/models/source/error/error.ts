@@ -9,7 +9,7 @@ export class ErrorSource implements ISource {
     return this;
   }
 
-  public async download(outDir: string): Promise<void> {
+  public async download(): Promise<void> {
     console.error(`Can't copy the source "${this.id}"`);
     throw new Error(`Can't copy the source "${this.id}"`);
   }

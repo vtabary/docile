@@ -1,11 +1,9 @@
 import { Command } from 'commander';
-import { resolve } from 'path';
+import version from '../data/version';
 import { DocileCli } from '../lib/cli/docile';
 
 const program = new Command();
-
-const pjson = require(resolve(__dirname, '../../package.json'));
-program.version(pjson.version);
+program.version(version.number);
 
 program
   .command('generate')

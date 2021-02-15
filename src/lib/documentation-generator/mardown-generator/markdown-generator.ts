@@ -1,5 +1,5 @@
 import marked from 'marked';
-import { readFile } from '../../file/file';
+import { readFile } from '../../helpers/file/file';
 
 export class MarkdownGenerator {
   public async generate(
