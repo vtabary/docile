@@ -1,50 +1,80 @@
-import { promises } from 'fs';
-import { load } from 'js-yaml';
-import { resolve, dirname } from 'path';
 import findUp from 'find-up';
+import { dirname, resolve } from 'path';
+import { promises } from 'fs';
+import { load as yamlLoad } from 'js-yaml';
 import { Documentation } from '../models/documentation/documentation';
 import { IBuildContext } from '../models/build-context/build-context';
+import { ContextBuilder } from '../builders/context/context';
 import {
   DocumentationBuilder,
   IDocumentationConfiguration,
 } from '../builders/documentation/documentation';
 
-export interface IConfiguration {
-  documentation: IDocumentationConfiguration;
-  build: IBuildContextObject;
+export interface IConfigurationFile {
+  documentation?: IDocumentationConfiguration;
+  build?: {
+    outDir?: string;
+  };
 }
 
-export interface IBuildContextObject {
-  outDir?: string;
-  tmpDir?: string;
-  templatesDir?: string;
+export interface IConfiguration {
+  documentation: Documentation;
+  build: IBuildContext;
 }
+
+/**
+ * For test purpose only
+ */
+export const WRAPPERS = {
+  findUp,
+};
 
 export class Configurationloader {
-  public async load(
-    options: { cwd?: string } = {}
-  ): Promise<{ documentation: Documentation; build: IBuildContext }> {
+  /**
+   * Read the YAML configuration file and parse it to return a Documentation object with its context
+   * @param options.cwd the current working directory used as a reference in the context in case of relative paths
+   */
+  public async load(options?: { cwd?: string }): Promise<IConfiguration> {
     const configurationPath = await this.getConfigutationFilePath(options);
-    const data = await this.readFile(configurationPath);
+    const configuration = await this.readFile(configurationPath);
+    const buildContext = await new ContextBuilder().build(configuration.build, {
+      cwd: dirname(configurationPath),
+    });
 
     return {
-      documentation: this.parseDocumentation(data?.documentation),
-      build: this.parseBuildContext(data?.build, configurationPath),
+      documentation: new DocumentationBuilder(buildContext).build(
+        configuration.documentation
+      ),
+      build: buildContext,
     };
   }
 
-  private async readFile(path: string): Promise<IConfiguration | null> {
+  /**
+   * Read and parse the YAML configuration file, or return an empty object when the parsing failed
+   * @param path the configuration file path
+   */
+  private async readFile(path: string): Promise<IConfigurationFile> {
     const data = await promises.readFile(path, { encoding: 'utf-8' });
-    const parsedData = load(data, { filename: path });
-    return typeof parsedData === 'object'
-      ? (parsedData as IConfiguration)
-      : null;
+    try {
+      const parsedData = yamlLoad(data, { filename: path });
+      return typeof parsedData === 'object'
+        ? (parsedData as IConfigurationFile)
+        : {};
+    } catch (e) {
+      return {};
+    }
   }
 
+  /**
+   * Try to find the first configuration file from the current working directory
+   * Try with the current directory or look for it in the parent directories when missing
+   * It throws when no file can been found
+   * @param options.cwd the directory in which we should start the search for a configuraiton file. Default: process.cwd()
+   */
   private async getConfigutationFilePath(
     options: { cwd?: string } = {}
   ): Promise<string> {
-    const filePath = await findUp('.docile.yml', {
+    const filePath = await WRAPPERS.findUp('.docile.yml', {
       cwd: options.cwd ? resolve(options.cwd) : process.cwd(),
     });
 
@@ -53,59 +83,5 @@ export class Configurationloader {
     }
 
     return filePath;
-  }
-
-  private parseDocumentation(
-    data: IDocumentationConfiguration = { versions: {} }
-  ): Documentation {
-    return new DocumentationBuilder().build(data);
-  }
-
-  private parseBuildContext(
-    data: IBuildContextObject = {},
-    configurationPath: string
-  ): IBuildContext {
-    const projectPath = dirname(configurationPath);
-    return {
-      outDir: this.resolveOutDir(data.outDir, { projectPath }),
-      tmpDir: this.resolveTmpDir(data.tmpDir, { projectPath }),
-      templatesDir: this.resolveTemplatesDir(data.templatesDir, {
-        projectPath,
-      }),
-    };
-  }
-
-  private resolveTemplatesDir(
-    givenDir: string | undefined,
-    options: { projectPath: string }
-  ): string {
-    if (!givenDir) {
-      return resolve(__dirname, '../../../../templates');
-    }
-
-    // TODO: support templates from other libraries using require.resolve
-    return resolve(options.projectPath, givenDir);
-  }
-
-  private resolveOutDir(
-    givenDir: string | undefined,
-    options: { projectPath: string }
-  ): string {
-    if (!givenDir) {
-      return resolve('public/docs');
-    }
-
-    return resolve(options.projectPath, givenDir);
-  }
-
-  private resolveTmpDir(
-    givenDir: string | undefined,
-    options: { projectPath: string }
-  ): string {
-    if (!givenDir) {
-      return resolve('.tmp');
-    }
-
-    return resolve(options.projectPath, givenDir);
   }
 }

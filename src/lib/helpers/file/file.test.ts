@@ -67,7 +67,7 @@ describe('#listFiles', () => {
     spyGlob.mockImplementation(async () => []);
   });
 
-  it('should return an empty list', () => {
+  it('should return an empty list', async () => {
     expect(listFiles('/tmp', ['**/*'])).resolves.toEqual([]);
     expect(spyGlob).toHaveBeenCalledWith(['**/*'], {
       cwd: '/tmp',
@@ -86,7 +86,7 @@ describe('#listFiles', () => {
     });
   });
 
-  it('should get the file list of the source directory', () => {
+  it('should get the file list of the source directory', async () => {
     expect(listFiles('/tmp', ['**/*'])).resolves.toEqual([]);
   });
 

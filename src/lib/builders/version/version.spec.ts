@@ -1,18 +1,29 @@
+import { IBuildContext } from '../../models/build-context/build-context';
 import { Version } from '../../models/version/version';
 import { VersionBuilder } from './version';
 
 describe('VersionBuilder', () => {
   let builder: VersionBuilder;
+  let context: IBuildContext;
+
+  beforeEach(() => {
+    context = {
+      cwd: '/test',
+      outDir: '/test/out',
+      templatesDir: '/test/templates',
+      tmpDir: '/test/.tmp',
+    };
+  });
 
   describe('#new', () => {
     it('should create a new instance', () => {
-      expect(() => new VersionBuilder()).not.toThrow();
+      expect(() => new VersionBuilder(context)).not.toThrow();
     });
   });
 
   describe('#build', () => {
     beforeEach(() => {
-      builder = new VersionBuilder();
+      builder = new VersionBuilder(context);
     });
 
     it('should return a Version object', () => {

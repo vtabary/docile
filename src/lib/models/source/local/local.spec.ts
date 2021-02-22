@@ -1,10 +1,19 @@
+import { IBuildContext } from '../../build-context/build-context';
 import { LocalSource, WRAPPERS } from './local';
 
 describe('LocalSource', () => {
   let source: LocalSource;
   let mCopy: jest.SpyInstance;
+  let context: IBuildContext;
 
   beforeEach(() => {
+    context = {
+      cwd: '/test',
+      outDir: '/test/out',
+      templatesDir: '/test/templates',
+      tmpDir: '/test/.tmp',
+    };
+
     mCopy = jest.spyOn(WRAPPERS, 'copy');
     mCopy.mockImplementation(async () => undefined);
   });
@@ -13,26 +22,35 @@ describe('LocalSource', () => {
     it('should create an instance', () => {
       expect(
         () =>
-          new LocalSource({
-            path: 'http://test/content.md',
-            id: 'test',
-          })
+          new LocalSource(
+            {
+              path: 'http://test/content.md',
+              id: 'test',
+            },
+            context
+          )
       ).not.toThrow();
     });
 
     it('should set the id', () => {
-      const obj = new LocalSource({
-        path: '/some/dir/content.md',
-        id: 'test',
-      });
+      const obj = new LocalSource(
+        {
+          path: '/some/dir/content.md',
+          id: 'test',
+        },
+        context
+      );
       expect(obj.id).toEqual('test');
     });
 
     it('should set the path', () => {
-      const obj = new LocalSource({
-        path: '/some/dir/content.md',
-        id: 'test',
-      });
+      const obj = new LocalSource(
+        {
+          path: '/some/dir/content.md',
+          id: 'test',
+        },
+        context
+      );
       expect(obj.path).toEqual('/some/dir/content.md');
     });
   });
@@ -42,10 +60,13 @@ describe('LocalSource', () => {
       mCopy.mockReset();
 
       spyOn(console, 'log').and.stub();
-      source = new LocalSource({
-        path: '/some/dir/content.md',
-        id: 'test',
-      });
+      source = new LocalSource(
+        {
+          path: '/some/dir/content.md',
+          id: 'test',
+        },
+        context
+      );
     });
 
     it('should copy the file', async () => {

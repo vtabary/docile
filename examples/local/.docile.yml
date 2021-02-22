@@ -16,6 +16,6 @@ documentation:
       sources:
         src1:
           type: local
-          path: ./docs
+          path: ./docs1
 build:
   outDir: ./public/docs

@@ -1,18 +1,29 @@
+import { IBuildContext } from '../../models/build-context/build-context';
 import { Documentation } from '../../models/documentation/documentation';
 import { DocumentationBuilder } from './documentation';
 
 describe('DocumentationBuilder', () => {
   let builder: DocumentationBuilder;
+  let context: IBuildContext;
+
+  beforeEach(() => {
+    context = {
+      cwd: '/test',
+      outDir: '/test/out',
+      templatesDir: '/test/templates',
+      tmpDir: '/test/.tmp',
+    };
+  });
 
   describe('#new', () => {
     it('should create a new instance', () => {
-      expect(() => new DocumentationBuilder()).not.toThrow();
+      expect(() => new DocumentationBuilder(context)).not.toThrow();
     });
   });
 
   describe('#build', () => {
     beforeEach(() => {
-      builder = new DocumentationBuilder();
+      builder = new DocumentationBuilder(context);
     });
 
     it('should return a Documentation object', () => {

@@ -14,9 +14,14 @@ program
     process.cwd()
   )
   .action((args: { project: string }) => {
-    return new DocileCli().generate({
-      cwd: args.project,
-    });
+    return new DocileCli()
+      .generate({
+        cwd: args.project,
+      })
+      .catch((e: Error) => {
+        console.error(e.message);
+        process.exit(1);
+      });
   });
 
 program.parse(process.argv);

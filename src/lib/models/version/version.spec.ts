@@ -1,8 +1,19 @@
+import { IBuildContext } from '../build-context/build-context';
 import { LocalSource } from '../source/local/local';
 import { Version } from './version';
 
 describe('Version', () => {
   let version: Version;
+  let context: IBuildContext;
+
+  beforeEach(() => {
+    context = {
+      cwd: '/test',
+      outDir: '/test/out',
+      templatesDir: '/test/templates',
+      tmpDir: '/test/.tmp',
+    };
+  });
 
   describe('#new', () => {
     it('should creation a new instance', () => {
@@ -23,7 +34,9 @@ describe('Version', () => {
       expect(
         new Version({
           id: 'test',
-          sources: [new LocalSource({ id: 'local-test', path: '/tmp' })],
+          sources: [
+            new LocalSource({ id: 'local-test', path: '/tmp' }, context),
+          ],
         }).sources
       ).toEqual([expect.any(LocalSource)]);
     });
@@ -39,7 +52,10 @@ describe('Version', () => {
     });
 
     it('should call the download method of each source', async () => {
-      const source = new LocalSource({ id: 'test', path: '/tmp/local' });
+      const source = new LocalSource(
+        { id: 'test', path: '/tmp/local' },
+        context
+      );
       jest
         .spyOn(source, 'download')
         .mockImplementation(() => Promise.resolve());
@@ -50,11 +66,17 @@ describe('Version', () => {
     });
 
     it('should reject when at least one source is rejecting', async () => {
-      const source1 = new LocalSource({ id: 'test', path: '/tmp/local' });
+      const source1 = new LocalSource(
+        { id: 'test', path: '/tmp/local' },
+        context
+      );
       jest
         .spyOn(source1, 'download')
         .mockImplementation(() => Promise.resolve());
-      const source2 = new LocalSource({ id: 'test', path: '/tmp/local' });
+      const source2 = new LocalSource(
+        { id: 'test', path: '/tmp/local' },
+        context
+      );
       jest
         .spyOn(source2, 'download')
         .mockImplementation(() => Promise.reject('some error'));

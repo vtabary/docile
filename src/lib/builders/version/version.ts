@@ -1,3 +1,4 @@
+import { IBuildContext } from '../../models/build-context/build-context';
 import { Version } from '../../models/version/version';
 import { ISourceConfiguration, SourceBuilder } from '../source/source';
 
@@ -7,7 +8,11 @@ export interface IVersionConfiguration {
 }
 
 export class VersionBuilder {
-  private sourceBuilder = new SourceBuilder();
+  private sourceBuilder: SourceBuilder;
+
+  constructor(private buildContext: IBuildContext) {
+    this.sourceBuilder = new SourceBuilder(this.buildContext);
+  }
 
   public build(data: { id: string } & IVersionConfiguration): Version {
     const sources = Object.keys(data.sources).map((key) =>

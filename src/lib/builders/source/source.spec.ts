@@ -1,3 +1,4 @@
+import { IBuildContext } from '../../models/build-context/build-context';
 import { ErrorSource } from '../../models/source/error/error';
 import { GitSource } from '../../models/source/git/git';
 import { HttpSource } from '../../models/source/http/http';
@@ -6,16 +7,26 @@ import { SourceBuilder } from './source';
 
 describe('SourceBuilder', () => {
   let builder: SourceBuilder;
+  let context: IBuildContext;
+
+  beforeEach(() => {
+    context = {
+      cwd: '/test',
+      outDir: '/test/out',
+      templatesDir: '/test/templates',
+      tmpDir: '/test/.tmp',
+    };
+  });
 
   describe('#new', () => {
     it('should create a new instance', () => {
-      expect(() => new SourceBuilder()).not.toThrow();
+      expect(() => new SourceBuilder(context)).not.toThrow();
     });
   });
 
   describe('#build', () => {
     beforeEach(() => {
-      builder = new SourceBuilder();
+      builder = new SourceBuilder(context);
     });
 
     it('should parse a local source', () => {

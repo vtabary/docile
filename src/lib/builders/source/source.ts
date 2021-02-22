@@ -3,6 +3,7 @@ import { LocalSource } from '../../models/source/local/local';
 import { ErrorSource } from '../../models/source/error/error';
 import { GitSource } from '../../models/source/git/git';
 import { HttpSource } from '../../models/source/http/http';
+import { IBuildContext } from '../../models/build-context/build-context';
 
 export interface IBaseSourceConfiguration {
   type: string;
@@ -28,10 +29,12 @@ export type ISourceConfiguration =
   | ILocalSourceConfiguration;
 
 export class SourceBuilder {
+  constructor(private buildContext: IBuildContext) {}
+
   public build(data: { id: string } & ISourceConfiguration): ISource {
     switch (data.type) {
       case 'local':
-        return new LocalSource(data);
+        return new LocalSource(data, this.buildContext);
       case 'git':
         return new GitSource(data);
       case 'http':

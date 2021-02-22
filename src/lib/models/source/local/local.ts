@@ -1,5 +1,6 @@
 import { copy } from 'fs-extra';
 import { resolve } from 'path';
+import { IBuildContext } from '../../build-context/build-context';
 import { ISource } from '../source';
 
 /**
@@ -13,9 +14,9 @@ export class LocalSource implements ISource {
   public readonly id: string;
   public path: string;
 
-  constructor(data: { id: string; path: string }) {
+  constructor(data: { id: string; path: string }, buildContext: IBuildContext) {
     this.id = data.id;
-    this.path = data.path;
+    this.path = resolve(buildContext.cwd, data.path);
   }
 
   public download(outDir: string): Promise<void> {
