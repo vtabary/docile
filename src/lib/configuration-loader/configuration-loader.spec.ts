@@ -1,10 +1,12 @@
 import { promises } from 'fs-extra';
 import { resolve } from 'path';
+import { MockedLogger } from '../logger/logger.mock';
 import { Documentation } from '../models/documentation/documentation';
 import { Configurationloader, WRAPPERS } from './configuration-loader';
 
 describe('Configurationloader', () => {
   let loader: Configurationloader;
+  let logger: MockedLogger;
 
   beforeEach(() => {
     // Mock the external calls
@@ -12,17 +14,19 @@ describe('Configurationloader', () => {
     jest
       .spyOn(WRAPPERS, 'findUp')
       .mockImplementation(async () => '/some/.docile.yml');
+
+    logger = new MockedLogger();
   });
 
   describe('#new', () => {
     it('should create an instance', () => {
-      expect(() => new Configurationloader()).not.toThrow();
+      expect(() => new Configurationloader({ logger })).not.toThrow();
     });
   });
 
   describe('#load', () => {
     beforeEach(() => {
-      loader = new Configurationloader();
+      loader = new Configurationloader({ logger });
     });
 
     it('should use the current working directory as default', async () => {
@@ -34,7 +38,7 @@ describe('Configurationloader', () => {
 
     it('should return an empty object when the parsing is failing', async () => {
       jest.spyOn(promises, 'readFile').mockImplementation(async () => '{');
-      expect(loader.load()).resolves.toEqual({
+      await expect(loader.load()).resolves.toEqual({
         documentation: expect.any(Documentation),
         build: {
           outDir: '/some/public/docs',
@@ -47,11 +51,11 @@ describe('Configurationloader', () => {
 
     it('should return an empty object when the file has not been found', async () => {
       jest.spyOn(WRAPPERS, 'findUp').mockImplementation(async () => undefined);
-      expect(loader.load()).rejects.toEqual(expect.any(Error));
+      await expect(loader.load()).rejects.toEqual(expect.any(Error));
     });
 
     it('should return a Documentation object', async () => {
-      expect(loader.load()).resolves.toEqual({
+      await expect(loader.load()).resolves.toEqual({
         documentation: expect.any(Documentation),
         build: {
           outDir: '/some/public/docs',
@@ -63,7 +67,7 @@ describe('Configurationloader', () => {
     });
 
     it('should consider a different working directory', async () => {
-      expect(loader.load({ cwd: '/some/project' })).resolves.toEqual({
+      await expect(loader.load({ cwd: '/some/project' })).resolves.toEqual({
         documentation: expect.any(Documentation),
         build: {
           outDir: '/some/public/docs',

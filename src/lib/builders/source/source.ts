@@ -4,6 +4,7 @@ import { ErrorSource } from '../../models/source/error/error';
 import { GitSource } from '../../models/source/git/git';
 import { HttpSource } from '../../models/source/http/http';
 import { IBuildContext } from '../../models/build-context/build-context';
+import { Logger } from '../../logger/logger';
 
 export interface IBaseSourceConfiguration {
   type: string;
@@ -29,18 +30,28 @@ export type ISourceConfiguration =
   | ILocalSourceConfiguration;
 
 export class SourceBuilder {
-  constructor(private buildContext: IBuildContext) {}
+  private logger: Logger;
+
+  constructor(
+    private buildContext: IBuildContext,
+    options: { logger: Logger }
+  ) {
+    this.logger = options.logger;
+  }
 
   public build(data: { id: string } & ISourceConfiguration): ISource {
     switch (data.type) {
       case 'local':
-        return new LocalSource(data, this.buildContext);
+        return new LocalSource(data, {
+          logger: this.logger,
+          buildContext: this.buildContext,
+        });
       case 'git':
-        return new GitSource(data);
+        return new GitSource(data, { logger: this.logger });
       case 'http':
-        return new HttpSource(data);
+        return new HttpSource(data, { logger: this.logger });
       default:
-        return new ErrorSource(data);
+        return new ErrorSource(data, { logger: this.logger });
     }
   }
 }

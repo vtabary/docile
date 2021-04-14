@@ -1,8 +1,8 @@
 import marked from 'marked';
-import { readFile } from '../../helpers/file/file';
+import { readFile } from '../../../helpers/file/file';
 
-export class MarkdownGenerator {
-  public async generate(
+export class MarkdownRenderer {
+  public async render(
     filePath: string,
     options: {
       baseUrl?: '/';

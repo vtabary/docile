@@ -1,17 +1,21 @@
+import { MockedLogger } from '../../logger/logger.mock';
 import { IBuildContext } from '../build-context/build-context';
 import { LocalSource } from '../source/local/local';
 import { Version } from './version';
 
 describe('Version', () => {
   let version: Version;
-  let context: IBuildContext;
+  let options: { logger: MockedLogger; buildContext: IBuildContext };
 
   beforeEach(() => {
-    context = {
-      cwd: '/test',
-      outDir: '/test/out',
-      templatesDir: '/test/templates',
-      tmpDir: '/test/.tmp',
+    options = {
+      buildContext: {
+        cwd: '/test',
+        outDir: '/test/out',
+        templatesDir: '/test/templates',
+        tmpDir: '/test/.tmp',
+      },
+      logger: new MockedLogger(),
     };
   });
 
@@ -35,7 +39,7 @@ describe('Version', () => {
         new Version({
           id: 'test',
           sources: [
-            new LocalSource({ id: 'local-test', path: '/tmp' }, context),
+            new LocalSource({ id: 'local-test', path: '/tmp' }, options),
           ],
         }).sources
       ).toEqual([expect.any(LocalSource)]);
@@ -48,13 +52,13 @@ describe('Version', () => {
     });
 
     it('should support an empty array of sources', async () => {
-      expect(version.download('/test')).resolves.toBeUndefined();
+      await expect(version.download('/test')).resolves.toBeUndefined();
     });
 
     it('should call the download method of each source', async () => {
       const source = new LocalSource(
         { id: 'test', path: '/tmp/local' },
-        context
+        options
       );
       jest
         .spyOn(source, 'download')
@@ -68,14 +72,14 @@ describe('Version', () => {
     it('should reject when at least one source is rejecting', async () => {
       const source1 = new LocalSource(
         { id: 'test', path: '/tmp/local' },
-        context
+        options
       );
       jest
         .spyOn(source1, 'download')
         .mockImplementation(() => Promise.resolve());
       const source2 = new LocalSource(
         { id: 'test', path: '/tmp/local' },
-        context
+        options
       );
       jest
         .spyOn(source2, 'download')
@@ -83,7 +87,7 @@ describe('Version', () => {
 
       version.sources = [source1, source2];
 
-      expect(version.download('/test')).rejects.toEqual('some error');
+      await expect(version.download('/test')).rejects.toEqual('some error');
     });
   });
 });

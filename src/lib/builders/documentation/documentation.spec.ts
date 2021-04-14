@@ -1,3 +1,4 @@
+import { MockedLogger } from '../../logger/logger.mock';
 import { IBuildContext } from '../../models/build-context/build-context';
 import { Documentation } from '../../models/documentation/documentation';
 import { DocumentationBuilder } from './documentation';
@@ -5,6 +6,7 @@ import { DocumentationBuilder } from './documentation';
 describe('DocumentationBuilder', () => {
   let builder: DocumentationBuilder;
   let context: IBuildContext;
+  let logger: MockedLogger;
 
   beforeEach(() => {
     context = {
@@ -13,17 +15,19 @@ describe('DocumentationBuilder', () => {
       templatesDir: '/test/templates',
       tmpDir: '/test/.tmp',
     };
+
+    logger = new MockedLogger();
   });
 
   describe('#new', () => {
     it('should create a new instance', () => {
-      expect(() => new DocumentationBuilder(context)).not.toThrow();
+      expect(() => new DocumentationBuilder(context, { logger })).not.toThrow();
     });
   });
 
   describe('#build', () => {
     beforeEach(() => {
-      builder = new DocumentationBuilder(context);
+      builder = new DocumentationBuilder(context, { logger });
     });
 
     it('should return a Documentation object', () => {

@@ -1,17 +1,21 @@
+import { MockedLogger } from '../../../logger/logger.mock';
 import { IBuildContext } from '../../build-context/build-context';
 import { LocalSource, WRAPPERS } from './local';
 
 describe('LocalSource', () => {
   let source: LocalSource;
   let mCopy: jest.SpyInstance;
-  let context: IBuildContext;
+  let options: { logger: MockedLogger; buildContext: IBuildContext };
 
   beforeEach(() => {
-    context = {
-      cwd: '/test',
-      outDir: '/test/out',
-      templatesDir: '/test/templates',
-      tmpDir: '/test/.tmp',
+    options = {
+      logger: new MockedLogger(),
+      buildContext: {
+        cwd: '/test',
+        outDir: '/test/out',
+        templatesDir: '/test/templates',
+        tmpDir: '/test/.tmp',
+      },
     };
 
     mCopy = jest.spyOn(WRAPPERS, 'copy');
@@ -27,7 +31,7 @@ describe('LocalSource', () => {
               path: 'http://test/content.md',
               id: 'test',
             },
-            context
+            options
           )
       ).not.toThrow();
     });
@@ -38,7 +42,7 @@ describe('LocalSource', () => {
           path: '/some/dir/content.md',
           id: 'test',
         },
-        context
+        options
       );
       expect(obj.id).toEqual('test');
     });
@@ -49,7 +53,7 @@ describe('LocalSource', () => {
           path: '/some/dir/content.md',
           id: 'test',
         },
-        context
+        options
       );
       expect(obj.path).toEqual('/some/dir/content.md');
     });
@@ -58,20 +62,20 @@ describe('LocalSource', () => {
   describe('#download', () => {
     beforeEach(() => {
       mCopy.mockReset();
+      jest.spyOn(options.logger, 'info').mockReturnValue(undefined);
 
-      spyOn(console, 'log').and.stub();
       source = new LocalSource(
         {
           path: '/some/dir/content.md',
           id: 'test',
         },
-        context
+        options
       );
     });
 
     it('should copy the file', async () => {
       await source.download('/tmp');
-      expect(console.log).toHaveBeenCalledWith(`Copying local files...
+      expect(options.logger.info).toHaveBeenCalledWith(`Copying local files...
   from "/some/dir/content.md"
   to "/tmp/test"`);
       expect(mCopy).toHaveBeenCalledWith('/some/dir/content.md', '/tmp/test');
@@ -81,7 +85,7 @@ describe('LocalSource', () => {
       source.path = '/some/dir';
 
       await source.download('/tmp');
-      expect(console.log).toHaveBeenCalledWith(`Copying local files...
+      expect(options.logger.info).toHaveBeenCalledWith(`Copying local files...
   from "/some/dir"
   to "/tmp/test"`);
       expect(mCopy).toHaveBeenCalledWith('/some/dir', '/tmp/test');

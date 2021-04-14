@@ -1,3 +1,4 @@
+import { MockedLogger } from '../../logger/logger.mock';
 import { IBuildContext } from '../../models/build-context/build-context';
 import { Version } from '../../models/version/version';
 import { VersionBuilder } from './version';
@@ -5,6 +6,7 @@ import { VersionBuilder } from './version';
 describe('VersionBuilder', () => {
   let builder: VersionBuilder;
   let context: IBuildContext;
+  let logger: MockedLogger;
 
   beforeEach(() => {
     context = {
@@ -13,17 +15,19 @@ describe('VersionBuilder', () => {
       templatesDir: '/test/templates',
       tmpDir: '/test/.tmp',
     };
+
+    logger = new MockedLogger();
   });
 
   describe('#new', () => {
     it('should create a new instance', () => {
-      expect(() => new VersionBuilder(context)).not.toThrow();
+      expect(() => new VersionBuilder(context, { logger })).not.toThrow();
     });
   });
 
   describe('#build', () => {
     beforeEach(() => {
-      builder = new VersionBuilder(context);
+      builder = new VersionBuilder(context, { logger });
     });
 
     it('should return a Version object', () => {

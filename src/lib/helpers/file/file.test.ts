@@ -68,7 +68,7 @@ describe('#listFiles', () => {
   });
 
   it('should return an empty list', async () => {
-    expect(listFiles('/tmp', ['**/*'])).resolves.toEqual([]);
+    await expect(listFiles('/tmp', ['**/*'])).resolves.toEqual([]);
     expect(spyGlob).toHaveBeenCalledWith(['**/*'], {
       cwd: '/tmp',
       absolute: true,
@@ -77,9 +77,9 @@ describe('#listFiles', () => {
 
   it('should return the relative file list', async () => {
     spyGlob.mockImplementation(async () => ['/tmp/file']);
-    expect(listFiles('/tmp', ['**/*'], { absolute: false })).resolves.toEqual([
-      '/tmp/file',
-    ]);
+    await expect(
+      listFiles('/tmp', ['**/*'], { absolute: false })
+    ).resolves.toEqual(['/tmp/file']);
     expect(spyGlob).toHaveBeenCalledWith(['**/*'], {
       cwd: '/tmp',
       absolute: false,
@@ -87,14 +87,14 @@ describe('#listFiles', () => {
   });
 
   it('should get the file list of the source directory', async () => {
-    expect(listFiles('/tmp', ['**/*'])).resolves.toEqual([]);
+    await expect(listFiles('/tmp', ['**/*'])).resolves.toEqual([]);
   });
 
-  it('should throw an error', () => {
+  it('should throw an error', async () => {
     spyGlob.mockImplementation(async () => {
       throw 'some error';
     });
-    expect(listFiles('/tmp', ['**/*'])).rejects.toEqual('some error');
+    await expect(listFiles('/tmp', ['**/*'])).rejects.toEqual('some error');
   });
 });
 

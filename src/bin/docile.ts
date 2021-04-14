@@ -1,9 +1,12 @@
 import { Command } from 'commander';
 import version from '../data/version';
 import { DocileCli } from '../lib/cli/docile';
+import { Logger } from '../lib/logger/logger';
 
 const program = new Command();
 program.version(version.number);
+
+const logger = new Logger();
 
 program
   .command('generate')
@@ -14,12 +17,12 @@ program
     process.cwd()
   )
   .action((args: { project: string }) => {
-    return new DocileCli()
+    return new DocileCli({ logger })
       .generate({
         cwd: args.project,
       })
       .catch((e: Error) => {
-        console.error(e.message);
+        logger.error(e.message);
         process.exit(1);
       });
   });

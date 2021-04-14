@@ -1,10 +1,10 @@
-import { resolve, basename, dirname } from 'path';
-import { renderFile } from 'ejs';
+import { resolve, basename } from 'path';
 import { writeFile } from '../../helpers/file/file';
 import { Documentation } from '../../models/documentation/documentation';
+import { EJSRenderer } from '../engines/ejs/ejs';
 
-export class TemplateGenerator {
-  public async generate(
+export class TemplateRenderer {
+  public async render(
     templatePath: string,
     to: string,
     options: {
@@ -12,8 +12,8 @@ export class TemplateGenerator {
       fileName?: string;
     }
   ): Promise<void> {
-    const content = await renderFile(templatePath, options.data, {
-      root: dirname(templatePath),
+    const content = await new EJSRenderer().render(templatePath, {
+      data: options.data,
     });
     return writeFile(
       resolve(to, options.fileName || basename(templatePath)),

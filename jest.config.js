@@ -8,4 +8,5 @@ module.exports = {
     'coverage',
     'templates',
   ],
+  resetMocks: true,
 };

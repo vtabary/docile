@@ -1,3 +1,4 @@
+import { Logger } from '../../logger/logger';
 import { IBuildContext } from '../../models/build-context/build-context';
 import { Documentation } from '../../models/documentation/documentation';
 import { IVersionConfiguration, VersionBuilder } from '../version/version';
@@ -8,12 +9,18 @@ export interface IDocumentationConfiguration {
 }
 
 export class DocumentationBuilder {
-  constructor(private buildContext: IBuildContext) {}
+  private versionBuilder: VersionBuilder;
+
+  constructor(
+    private buildContext: IBuildContext,
+    options: { logger: Logger }
+  ) {
+    this.versionBuilder = new VersionBuilder(this.buildContext, options);
+  }
 
   public build(data: IDocumentationConfiguration = {}): Documentation {
-    const versionBuilder = new VersionBuilder(this.buildContext);
     const versions = Object.entries(data.versions || {}).map(([key, value]) =>
-      versionBuilder.build({ id: key, ...value })
+      this.versionBuilder.build({ id: key, ...value })
     );
 
     return new Documentation({

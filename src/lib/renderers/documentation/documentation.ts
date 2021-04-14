@@ -1,11 +1,25 @@
 import { resolve } from 'path';
-import { Documentation } from '../models/documentation/documentation';
-import { copyFiles } from '../helpers/file/file';
-import { VersionGenerator } from './version-generator/version-generator';
-import { TemplateGenerator } from './template-generator/template-generator';
+import { Documentation } from '../../models/documentation/documentation';
+import { copyFiles } from '../../helpers/file/file';
+import { VersionRenderer } from '../version/version';
+import { TemplateRenderer } from '../template/template';
+import { Logger } from '../../logger/logger';
 
-export class DocumentationGenerator {
-  public generate(
+/**
+ * For test purposes only
+ */
+export const WRAPPERS = {
+  copyFiles,
+};
+
+export class DocumentationRenderer {
+  private logger: Logger;
+
+  constructor(options: { logger: Logger }) {
+    this.logger = options.logger;
+  }
+
+  public async render(
     documentation: Documentation,
     options: {
       from: string;
@@ -13,16 +27,15 @@ export class DocumentationGenerator {
       templatesDir: string;
     }
   ): Promise<void> {
-    console.log(
+    this.logger.info(
       `Compiling from "${options.from}" to "${options.to}" using templates in "${options.templatesDir}"...`
     );
 
-    return this.generateFiles(documentation, options).then(() =>
-      this.copyAssets(options)
-    );
+    await this.renderFiles(documentation, options);
+    await this.copyAssets(options);
   }
 
-  private async generateFiles(
+  private async renderFiles(
     documentation: Documentation,
     options: {
       from: string;
@@ -30,14 +43,15 @@ export class DocumentationGenerator {
       templatesDir: string;
     }
   ): Promise<void> {
+    const versionRenderer = new VersionRenderer();
     await Promise.all([
-      new TemplateGenerator().generate(
+      new TemplateRenderer().render(
         resolve(options.templatesDir, 'index.html'),
         options.to,
         { data: { documentation } }
       ),
       ...documentation.versions.map((version) =>
-        new VersionGenerator().generate(version, {
+        versionRenderer.render(version, {
           from: options.from,
           documentation: documentation,
           templatesDir: options.templatesDir,
@@ -48,11 +62,10 @@ export class DocumentationGenerator {
   }
 
   private copyAssets(options: {
-    from: string;
     to: string;
     templatesDir: string;
   }): Promise<void> {
-    return copyFiles(
+    return WRAPPERS.copyFiles(
       options.templatesDir,
       [
         '**/*.css',

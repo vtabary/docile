@@ -1,3 +1,4 @@
+import { MockedLogger } from '../../logger/logger.mock';
 import { IBuildContext } from '../../models/build-context/build-context';
 import { ErrorSource } from '../../models/source/error/error';
 import { GitSource } from '../../models/source/git/git';
@@ -8,6 +9,7 @@ import { SourceBuilder } from './source';
 describe('SourceBuilder', () => {
   let builder: SourceBuilder;
   let context: IBuildContext;
+  let logger: MockedLogger;
 
   beforeEach(() => {
     context = {
@@ -16,17 +18,19 @@ describe('SourceBuilder', () => {
       templatesDir: '/test/templates',
       tmpDir: '/test/.tmp',
     };
+
+    logger = new MockedLogger();
   });
 
   describe('#new', () => {
     it('should create a new instance', () => {
-      expect(() => new SourceBuilder(context)).not.toThrow();
+      expect(() => new SourceBuilder(context, { logger })).not.toThrow();
     });
   });
 
   describe('#build', () => {
     beforeEach(() => {
-      builder = new SourceBuilder(context);
+      builder = new SourceBuilder(context, { logger });
     });
 
     it('should parse a local source', () => {

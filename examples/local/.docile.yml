@@ -11,11 +11,11 @@ documentation:
         src2:
           type: local
           path: ./docs2
-    V12:
-      label: v12.x
-      sources:
-        src1:
-          type: local
-          path: ./docs1
+    # V12:
+    #   label: v12.x
+    #   sources:
+    #     src1:
+    #       type: local
+    #       path: ./docs1
 build:
   outDir: ./public/docs

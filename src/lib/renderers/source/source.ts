@@ -3,11 +3,11 @@ import { ISource } from '../../models/source/source';
 import { Documentation } from '../../models/documentation/documentation';
 import { Version } from '../../models/version/version';
 import { listFiles } from '../../helpers/file/file';
-import { MarkdownGenerator } from '../mardown-generator/markdown-generator';
-import { TemplateGenerator } from '../template-generator/template-generator';
+import { MarkdownRenderer } from '../engines/mardown/markdown';
+import { TemplateRenderer } from '../template/template';
 
-export class SourceGenerator {
-  public async generate(
+export class SourceRenderer {
+  public async render(
     source: ISource,
     options: {
       documentation: Documentation;
@@ -23,7 +23,7 @@ export class SourceGenerator {
 
     await Promise.all(
       mdFiles.map((md) =>
-        this.generateFile(md, {
+        this.renderFile(md, {
           documentation: options.documentation,
           version: options.version,
           templatesDir: options.templatesDir,
@@ -34,7 +34,7 @@ export class SourceGenerator {
     );
   }
 
-  private generateFile(
+  private renderFile(
     filePath: string,
     options: {
       documentation: Documentation;
@@ -44,12 +44,12 @@ export class SourceGenerator {
       templatesDir: string;
     }
   ): Promise<void> {
-    return new MarkdownGenerator()
-      .generate(filePath, {
+    return new MarkdownRenderer()
+      .render(filePath, {
         baseUrl: '/',
       })
       .then((markdown) =>
-        new TemplateGenerator().generate(
+        new TemplateRenderer().render(
           resolve(options.templatesDir, 'page.html'),
           options.to,
           {

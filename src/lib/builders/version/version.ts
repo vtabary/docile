@@ -1,3 +1,4 @@
+import { Logger } from '../../logger/logger';
 import { IBuildContext } from '../../models/build-context/build-context';
 import { Version } from '../../models/version/version';
 import { ISourceConfiguration, SourceBuilder } from '../source/source';
@@ -10,8 +11,11 @@ export interface IVersionConfiguration {
 export class VersionBuilder {
   private sourceBuilder: SourceBuilder;
 
-  constructor(private buildContext: IBuildContext) {
-    this.sourceBuilder = new SourceBuilder(this.buildContext);
+  constructor(
+    private buildContext: IBuildContext,
+    options: { logger: Logger }
+  ) {
+    this.sourceBuilder = new SourceBuilder(this.buildContext, options);
   }
 
   public build(data: { id: string } & IVersionConfiguration): Version {

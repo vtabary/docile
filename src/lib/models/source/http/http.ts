@@ -1,5 +1,6 @@
 import download from 'download';
 import { resolve } from 'path';
+import { Logger } from '../../../logger/logger';
 import { ISource } from '../source';
 
 /**
@@ -12,15 +13,17 @@ export const WRAPPERS = {
 export class HttpSource implements ISource {
   public readonly id: string;
   public path: string;
+  private logger: Logger;
 
-  constructor(data: { id: string; path: string }) {
+  constructor(data: { id: string; path: string }, options: { logger: Logger }) {
     this.id = data.id;
     this.path = data.path;
+    this.logger = options.logger;
   }
 
   public async download(outDir: string): Promise<void> {
     const to = resolve(outDir, this.id);
-    console.log(`Copying remote HTTP files...
+    this.logger.info(`Copying remote HTTP files...
   from "${this.path}"
   to "${to}"`);
 

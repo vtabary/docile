@@ -30,7 +30,7 @@ describe('Version', () => {
     });
 
     it('should support an empty array of versions', async () => {
-      expect(documentation.download('/test')).resolves.toBeUndefined();
+      await expect(documentation.download('/test')).resolves.toBeUndefined();
     });
 
     it('should call the download method of each version', async () => {
@@ -56,7 +56,9 @@ describe('Version', () => {
 
       documentation.versions = [version1, version2];
 
-      expect(documentation.download('/test')).rejects.toEqual('some error');
+      await expect(documentation.download('/test')).rejects.toEqual(
+        'some error'
+      );
     });
   });
 });

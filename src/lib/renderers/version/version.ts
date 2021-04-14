@@ -2,11 +2,11 @@ import { resolve } from 'path';
 import { Version } from '../../models/version/version';
 import { ISource } from '../../models/source/source';
 import { Documentation } from '../../models/documentation/documentation';
-import { TemplateGenerator } from '../template-generator/template-generator';
-import { SourceGenerator } from '../source-generator/source-generator';
+import { TemplateRenderer } from '../template/template';
+import { SourceRenderer } from '../source/source';
 
-export class VersionGenerator {
-  public async generate(
+export class VersionRenderer {
+  public async render(
     version: Version,
     options: {
       documentation: Documentation;
@@ -16,19 +16,19 @@ export class VersionGenerator {
     }
   ): Promise<void> {
     await Promise.all([
-      this.generateIndex(version, options),
+      this.renderIndex(version, options),
       ...version.sources.map((source) =>
-        this.generateSource(version, source, options)
+        this.renderSource(version, source, options)
       ),
     ]);
   }
 
-  private generateIndex(
+  private renderIndex(
     version: Version,
     options: { documentation: Documentation; to: string; templatesDir: string }
   ): Promise<void> {
     const toDir = resolve(options.to, version.id);
-    return new TemplateGenerator().generate(
+    return new TemplateRenderer().render(
       resolve(options.templatesDir, 'version.html'),
       toDir,
       {
@@ -41,7 +41,7 @@ export class VersionGenerator {
     );
   }
 
-  private generateSource(
+  private renderSource(
     version: Version,
     source: ISource,
     options: {
@@ -53,7 +53,7 @@ export class VersionGenerator {
   ): Promise<void> {
     const toDir = resolve(options.to, version.id);
     const fromDir = resolve(options.from, version.id);
-    return new SourceGenerator().generate(source, {
+    return new SourceRenderer().render(source, {
       from: fromDir,
       to: toDir,
       templatesDir: options.templatesDir,
