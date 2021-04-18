@@ -4,3 +4,4 @@ coverage
 examples/**/public
 examples/**/dist
 examples/**/.tmp
+coverage
