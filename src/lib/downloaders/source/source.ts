@@ -1,13 +1,24 @@
 import { Logger } from '../../logger/logger';
+import { IDocumentation } from '../../models/documentation';
 import { ISource } from '../../models/source';
+import { IVersion } from '../../models/version';
 import { IDownloader } from '../downloader';
 import { ErrorSourceDownloader } from './error/error';
 import { GitSourceDownloader } from './git/git';
 import { HttpSourceDownloader } from './http/http';
 import { LocalSourceDownloader } from './local/local';
 
-export interface ISourceDownloader extends IDownloader<ISource> {
-  download(source: ISource): Promise<void>;
+export interface ISourceDownloader
+  extends IDownloader<{
+    documentation: IDocumentation;
+    version: IVersion;
+    source: ISource;
+  }> {
+  download(data: {
+    documentation: IDocumentation;
+    version: IVersion;
+    source: ISource;
+  }): Promise<void>;
 }
 
 export class SourceDownloader implements ISourceDownloader {
@@ -22,9 +33,13 @@ export class SourceDownloader implements ISourceDownloader {
     private options: { logger: Logger; downloadDir: string; cwd: string }
   ) {}
 
-  public download(source: ISource): Promise<void> {
+  public download(data: {
+    documentation: IDocumentation;
+    version: IVersion;
+    source: ISource;
+  }): Promise<void> {
     const downloader =
-      this.downloaders[source.type] || this.downloaders['error'];
-    return downloader.download(source);
+      this.downloaders[data.source.type] || this.downloaders['error'];
+    return downloader.download(data);
   }
 }

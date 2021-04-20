@@ -36,11 +36,13 @@ describe('DocumentationDownloader', () => {
     });
 
     it('should support an empty array of versions', async () => {
-      await expect(downloader.download(documentation)).resolves.toBeUndefined();
+      await expect(
+        downloader.download({ documentation })
+      ).resolves.toBeUndefined();
     });
 
     it('should call the download method of each version', async () => {
-      await downloader.download(documentation);
+      await downloader.download({ documentation });
       expect(spyRenderer).toHaveBeenCalledTimes(1);
       expect(spyRenderer).toHaveBeenCalledWith(documentation.versions[0]);
     });
@@ -52,7 +54,7 @@ describe('DocumentationDownloader', () => {
       spyRenderer.mockResolvedValueOnce(undefined);
       spyRenderer.mockRejectedValueOnce('some error');
 
-      await expect(downloader.download(documentation)).rejects.toEqual(
+      await expect(downloader.download({ documentation })).rejects.toEqual(
         'some error'
       );
     });

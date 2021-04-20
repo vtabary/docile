@@ -29,7 +29,7 @@ export const WRAPPERS = {
   findUp,
 };
 
-export class Configurationloader {
+export class ConfigurationLoader {
   /**
    * Read the YAML configuration file and parse it to return a Documentation object with its context
    * @param options.cwd the current working directory used as a reference in the context in case of relative paths

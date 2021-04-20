@@ -1,13 +1,14 @@
-import { Documentation } from '../models/documentation/documentation';
-import { Configurationloader } from '../configuration-loader/configuration-loader';
-import { IBuildContext } from '../models/build-context/build-context';
-import { DocumentationRenderer } from '../renderers/documentation/documentation';
 import { Logger } from '../logger/logger';
+import { ConfigurationLoader } from '../configuration-loader/configuration-loader';
+import { DocumentationRenderer } from '../renderers/documentation/documentation';
+import { DocumentationDownloader } from '../downloaders/documentation/documentation';
+import { IDocumentation } from '../models/documentation';
+import { IBuildContext } from '../models/build-context';
 
 export class DocileCli {
   private logger: Logger;
   private configuration?: {
-    documentation: Documentation;
+    documentation: IDocumentation;
     build: IBuildContext;
   };
 
@@ -43,7 +44,11 @@ export class DocileCli {
     // Parse configuration
     const configuration = await this.loadConfiguration(options);
     // Download the assets
-    await configuration.documentation.download(configuration.build.tmpDir);
+    await new DocumentationDownloader({
+      cwd: configuration.build.cwd,
+      downloadDir: configuration.build.tmpDir,
+      logger: this.logger,
+    }).download({ documentation: configuration.documentation });
   }
 
   /**
@@ -53,11 +58,9 @@ export class DocileCli {
    */
   private async loadConfiguration(
     options: { cwd?: string } = {}
-  ): Promise<{ documentation: Documentation; build: IBuildContext }> {
+  ): Promise<{ documentation: IDocumentation; build: IBuildContext }> {
     if (!this.configuration) {
-      this.configuration = await new Configurationloader({
-        logger: this.logger,
-      }).load(options);
+      this.configuration = await new ConfigurationLoader().load(options);
     }
 
     return this.configuration;

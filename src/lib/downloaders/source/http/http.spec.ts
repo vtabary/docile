@@ -1,8 +1,12 @@
 import { MockedLogger } from '../../../logger/logger.mock';
+import { IDocumentation } from '../../../models/documentation';
+import { IVersion } from '../../../models/version';
 import { HttpSourceDownloader, IHttpSource, WRAPPERS } from './http';
 
 describe('HttpSourceDownloader', () => {
   let downloader: HttpSourceDownloader;
+  let documentation: IDocumentation;
+  let version: IVersion;
   let source: IHttpSource;
   let options: { logger: MockedLogger; cwd: string; downloadDir: string };
   let mDownload: jest.SpyInstance;
@@ -12,6 +16,13 @@ describe('HttpSourceDownloader', () => {
     mDownload.mockImplementation(async () => undefined);
 
     options = { logger: new MockedLogger(), cwd: '/some', downloadDir: '.tmp' };
+    documentation = {
+      versions: [],
+    };
+    version = {
+      id: 'test',
+      sources: [],
+    };
     source = {
       id: 'test',
       type: 'http',
@@ -35,7 +46,7 @@ describe('HttpSourceDownloader', () => {
     });
 
     it('should download the file', async () => {
-      await downloader.download(source);
+      await downloader.download({ documentation, version, source });
       expect(options.logger.info)
         .toHaveBeenCalledWith(`Copying remote HTTP files...
   from "http://test/content.md"
@@ -51,9 +62,9 @@ describe('HttpSourceDownloader', () => {
       mDownload.mockImplementation(async () =>
         Promise.reject(new Error('some download error'))
       );
-      await expect(downloader.download(source)).rejects.toThrow(
-        'some download error'
-      );
+      await expect(
+        downloader.download({ documentation, version, source })
+      ).rejects.toThrow('some download error');
     });
   });
 });

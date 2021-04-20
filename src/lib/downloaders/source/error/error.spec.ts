@@ -1,12 +1,23 @@
 import { MockedLogger } from '../../../logger/logger.mock';
+import { IDocumentation } from '../../../models/documentation';
+import { IVersion } from '../../../models/version';
 import { ErrorSourceDownloader } from './error';
 
 describe('ErrorSource', () => {
-  let source: ErrorSourceDownloader;
   let logger: MockedLogger;
+  let documentation: IDocumentation;
+  let version: IVersion;
+  let source: ErrorSourceDownloader;
 
   beforeEach(() => {
     logger = new MockedLogger();
+    documentation = {
+      versions: [],
+    };
+    version = {
+      id: 'test',
+      sources: [],
+    };
   });
 
   describe('#new', () => {
@@ -22,7 +33,11 @@ describe('ErrorSource', () => {
 
     it('should throw', async () => {
       await expect(
-        source.download({ id: 'test', type: 'unknown', options: {} })
+        source.download({
+          documentation,
+          version,
+          source: { id: 'test', type: 'unknown', options: {} },
+        })
       ).rejects.toThrow(`Can't copy the source "test"`);
     });
   });

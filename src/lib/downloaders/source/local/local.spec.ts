@@ -1,8 +1,12 @@
 import { MockedLogger } from '../../../logger/logger.mock';
+import { IDocumentation } from '../../../models/documentation';
+import { IVersion } from '../../../models/version';
 import { ILocalSource, LocalSourceDownloader, WRAPPERS } from './local';
 
 describe('LocalSourceDownloader', () => {
   let downloader: LocalSourceDownloader;
+  let documentation: IDocumentation;
+  let version: IVersion;
   let source: ILocalSource;
   let options: { logger: MockedLogger; cwd: string; downloadDir: string };
   let mCopy: jest.SpyInstance;
@@ -15,6 +19,13 @@ describe('LocalSourceDownloader', () => {
       logger: new MockedLogger(),
       cwd: '/some',
       downloadDir: '.tmp',
+    };
+    documentation = {
+      versions: [],
+    };
+    version = {
+      id: 'test',
+      sources: [],
     };
     source = {
       id: 'test',
@@ -40,7 +51,7 @@ describe('LocalSourceDownloader', () => {
     });
 
     it('should copy the file', async () => {
-      await downloader.download(source);
+      await downloader.download({ documentation, version, source });
       expect(options.logger.info).toHaveBeenCalledWith(`Copying local files...
   from "/dir/content.md"
   to "/some/.tmp/test"`);
@@ -50,7 +61,7 @@ describe('LocalSourceDownloader', () => {
     it('should copy a dir', async () => {
       source.options.path = '/some/dir';
 
-      await downloader.download(source);
+      await downloader.download({ documentation, version, source });
       expect(options.logger.info).toHaveBeenCalledWith(`Copying local files...
   from "/some/dir"
   to "/some/.tmp/test"`);
@@ -61,9 +72,9 @@ describe('LocalSourceDownloader', () => {
       mCopy.mockImplementation(async () =>
         Promise.reject(new Error('some copy error'))
       );
-      await expect(downloader.download(source)).rejects.toThrow(
-        'some copy error'
-      );
+      await expect(
+        downloader.download({ documentation, version, source })
+      ).rejects.toThrow('some copy error');
     });
   });
 });

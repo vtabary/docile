@@ -1,9 +1,9 @@
 import { promises } from 'fs-extra';
 import { resolve } from 'path';
-import { Configurationloader, WRAPPERS } from './configuration-loader';
+import { ConfigurationLoader, WRAPPERS } from './configuration-loader';
 
-describe('Configurationloader', () => {
-  let loader: Configurationloader;
+describe('ConfigurationLoader', () => {
+  let loader: ConfigurationLoader;
 
   beforeEach(() => {
     // Mock the external calls
@@ -30,13 +30,13 @@ build:
 
   describe('#new', () => {
     it('should create an instance', () => {
-      expect(() => new Configurationloader()).not.toThrow();
+      expect(() => new ConfigurationLoader()).not.toThrow();
     });
   });
 
   describe('#load', () => {
     beforeEach(() => {
-      loader = new Configurationloader();
+      loader = new ConfigurationLoader();
     });
 
     it('should use the current working directory as default', async () => {

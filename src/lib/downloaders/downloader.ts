@@ -1,3 +1,3 @@
 export interface IDownloader<T> {
-  download(item: T): Promise<void>;
+  download(items: T): Promise<void>;
 }

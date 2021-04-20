@@ -3,6 +3,8 @@ import { resolve } from 'path';
 import { Logger } from '../../../logger/logger';
 import { ISource } from '../../../models/source';
 import { ISourceDownloader } from '../source';
+import { IVersion } from '../../../models/version';
+import { IDocumentation } from '../../../models/documentation';
 
 /**
  * For test purpose only
@@ -18,15 +20,24 @@ export class GitSourceDownloader implements ISourceDownloader {
     private options: { logger: Logger; cwd: string; downloadDir: string }
   ) {}
 
-  public async download(source: IGitSource): Promise<void> {
-    const to = resolve(this.options.cwd, this.options.downloadDir, source.id);
+  public async download(data: {
+    documentation: IDocumentation;
+    version: IVersion;
+    source: IGitSource;
+  }): Promise<void> {
+    const to = resolve(
+      this.options.cwd,
+      this.options.downloadDir,
+      data.version.id,
+      data.source.id
+    );
     const git = WRAPPERS.git();
     this.options.logger.info(`Cloning files...
-  from "${source.options.url}"
+  from "${data.source.options.url}"
   to "${to}"`);
 
-    await git.clone(source.options.url, to);
-    await git.checkout(this.getBranch(source));
+    await git.clone(data.source.options.url, to);
+    await git.checkout(this.getBranch(data.source));
   }
 
   private getBranch(source: IGitSource): string {
