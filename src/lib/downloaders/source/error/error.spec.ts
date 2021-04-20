@@ -1,8 +1,8 @@
 import { MockedLogger } from '../../../logger/logger.mock';
-import { ErrorSource } from './error';
+import { ErrorSourceDownloader } from './error';
 
 describe('ErrorSource', () => {
-  let source: ErrorSource;
+  let source: ErrorSourceDownloader;
   let logger: MockedLogger;
 
   beforeEach(() => {
@@ -11,19 +11,19 @@ describe('ErrorSource', () => {
 
   describe('#new', () => {
     it('should create an instance', () => {
-      expect(() => new ErrorSource({ id: 'test' }, { logger })).not.toThrow();
+      expect(() => new ErrorSourceDownloader({ logger })).not.toThrow();
     });
   });
 
   describe('#download', () => {
     beforeEach(() => {
-      source = new ErrorSource({ id: 'test' }, { logger });
+      source = new ErrorSourceDownloader({ logger });
     });
 
     it('should throw', async () => {
-      await expect(source.download()).rejects.toThrow(
-        `Can't copy the source "test"`
-      );
+      await expect(
+        source.download({ id: 'test', type: 'unknown', options: {} })
+      ).rejects.toThrow(`Can't copy the source "test"`);
     });
   });
 });

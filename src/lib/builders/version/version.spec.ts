@@ -1,57 +1,68 @@
-import { MockedLogger } from '../../logger/logger.mock';
-import { IBuildContext } from '../../models/build-context/build-context';
-import { Version } from '../../models/version/version';
-import { VersionBuilder } from './version';
+import { IVersionConfiguration, VersionBuilder } from './version';
 
 describe('VersionBuilder', () => {
   let builder: VersionBuilder;
-  let context: IBuildContext;
-  let logger: MockedLogger;
+  let config: IVersionConfiguration;
 
   beforeEach(() => {
-    context = {
-      cwd: '/test',
-      outDir: '/test/out',
-      templatesDir: '/test/templates',
-      tmpDir: '/test/.tmp',
+    config = {
+      sources: {
+        test: {
+          type: 'test',
+          options: {},
+        },
+      },
+      label: 'test',
     };
-
-    logger = new MockedLogger();
   });
 
   describe('#new', () => {
     it('should create a new instance', () => {
-      expect(() => new VersionBuilder(context, { logger })).not.toThrow();
+      expect(() => new VersionBuilder()).not.toThrow();
     });
   });
 
   describe('#build', () => {
     beforeEach(() => {
-      builder = new VersionBuilder(context, { logger });
+      builder = new VersionBuilder();
     });
 
     it('should return a Version object', () => {
-      const version = builder.build({ id: 'test', sources: {} });
-      expect(version).toEqual(expect.any(Version));
-      expect(version).toEqual(
-        expect.objectContaining({
-          id: 'test',
-          sources: [],
-        })
-      );
+      const version = builder.build('test', config);
+      expect(version).toEqual({
+        id: 'test',
+        label: 'test',
+        sources: [
+          {
+            id: 'test',
+            type: 'test',
+            options: {},
+          },
+        ],
+      });
+    });
+  });
+
+  describe('#validate', () => {
+    beforeEach(() => {
+      builder = new VersionBuilder();
     });
 
-    it('should set the sources', () => {
-      const version = builder.build({
-        id: 'test',
-        sources: { test: { path: '/tmp', type: 'local' } },
-      });
-      expect(version).toEqual(
-        expect.objectContaining({
-          id: 'test',
-          sources: [expect.objectContaining({ id: 'test', path: '/tmp' })],
-        })
-      );
+    it('should return true for a configuration without label', () => {
+      delete (config as any).label;
+      const valid = builder.validate(config);
+      expect(valid).toBe(true);
+    });
+
+    it('should return false for a configuration without sources', () => {
+      config.sources = {};
+      const valid = builder.validate(config);
+      expect(valid).toBe(false);
+    });
+
+    it('should return true for a valid configuration', () => {
+      const valid = builder.validate(config);
+      expect(valid).toBe(true);
     });
   });
 });

@@ -1,32 +1,42 @@
 import { promises } from 'fs-extra';
 import { resolve } from 'path';
-import { MockedLogger } from '../logger/logger.mock';
-import { Documentation } from '../models/documentation/documentation';
 import { Configurationloader, WRAPPERS } from './configuration-loader';
 
 describe('Configurationloader', () => {
   let loader: Configurationloader;
-  let logger: MockedLogger;
 
   beforeEach(() => {
     // Mock the external calls
-    jest.spyOn(promises, 'readFile').mockImplementation(async () => '');
+    jest.spyOn(promises, 'readFile').mockImplementation(
+      async () => `documentation:
+  label: Local documentation
+  summary: ./summary.md
+  versions:
+    latest:
+      label: latest
+      sources:
+        src1:
+          type: local
+          options:
+            path: ./docs1
+build:
+  outDir: ./public/docs
+`
+    );
     jest
       .spyOn(WRAPPERS, 'findUp')
       .mockImplementation(async () => '/some/.docile.yml');
-
-    logger = new MockedLogger();
   });
 
   describe('#new', () => {
     it('should create an instance', () => {
-      expect(() => new Configurationloader({ logger })).not.toThrow();
+      expect(() => new Configurationloader()).not.toThrow();
     });
   });
 
   describe('#load', () => {
     beforeEach(() => {
-      loader = new Configurationloader({ logger });
+      loader = new Configurationloader();
     });
 
     it('should use the current working directory as default', async () => {
@@ -36,17 +46,11 @@ describe('Configurationloader', () => {
       });
     });
 
-    it('should return an empty object when the parsing is failing', async () => {
+    it('should throw when the parsing is failing', async () => {
       jest.spyOn(promises, 'readFile').mockImplementation(async () => '{');
-      await expect(loader.load()).resolves.toEqual({
-        documentation: expect.any(Documentation),
-        build: {
-          outDir: '/some/public/docs',
-          tmpDir: '/some/.tmp',
-          templatesDir: resolve('templates'),
-          cwd: '/some',
-        },
-      });
+      await expect(loader.load()).rejects.toEqual(
+        new Error('Invalid configuration')
+      );
     });
 
     it('should return an empty object when the file has not been found', async () => {
@@ -56,7 +60,24 @@ describe('Configurationloader', () => {
 
     it('should return a Documentation object', async () => {
       await expect(loader.load()).resolves.toEqual({
-        documentation: expect.any(Documentation),
+        documentation: {
+          label: 'Local documentation',
+          versions: [
+            {
+              id: 'latest',
+              label: 'latest',
+              sources: [
+                {
+                  id: 'src1',
+                  type: 'local',
+                  options: {
+                    path: './docs1',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         build: {
           outDir: '/some/public/docs',
           tmpDir: '/some/.tmp',
@@ -68,7 +89,24 @@ describe('Configurationloader', () => {
 
     it('should consider a different working directory', async () => {
       await expect(loader.load({ cwd: '/some/project' })).resolves.toEqual({
-        documentation: expect.any(Documentation),
+        documentation: {
+          label: 'Local documentation',
+          versions: [
+            {
+              id: 'latest',
+              label: 'latest',
+              sources: [
+                {
+                  id: 'src1',
+                  type: 'local',
+                  options: {
+                    path: './docs1',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         build: {
           outDir: '/some/public/docs',
           tmpDir: '/some/.tmp',
@@ -78,23 +116,15 @@ describe('Configurationloader', () => {
       });
     });
 
-    it('should support an empty documentation configuration', async () => {
+    it('should throw for an empty documentation configuration', async () => {
       jest.spyOn(promises, 'readFile').mockImplementation(
         async () => `build:
   outDir: ./public/docs
 `
       );
-      const documentation = await loader.load();
-      expect(documentation.documentation.label).toEqual(
-        'Untitled documentation'
+      await expect(loader.load()).rejects.toEqual(
+        new Error('Invalid configuration')
       );
-      expect(documentation.documentation.versions.length).toEqual(0);
-      expect(documentation.build).toEqual({
-        outDir: '/some/public/docs',
-        templatesDir: resolve('templates'),
-        tmpDir: '/some/.tmp',
-        cwd: '/some',
-      });
     });
 
     it('should support an empty build configuration', async () => {
@@ -108,16 +138,19 @@ describe('Configurationloader', () => {
       sources:
         src1:
           type: local
-          path: ./docs1
+          options:
+            path: ./docs1
         src2:
           type: local
-          path: ./docs2
+          options:
+            path: ./docs2
     V12:
       label: v12.x
       sources:
         src1:
           type: local
-          path: ./docs
+          options:
+            path: ./docs
 `
       );
       const documentation = await loader.load();

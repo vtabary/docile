@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import { IBuildContext } from '../../models/build-context/build-context';
+import { IBuildContext } from '../../models/build-context';
 
 export class ContextBuilder {
   public build(

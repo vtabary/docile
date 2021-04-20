@@ -1,15 +1,15 @@
 import { resolve } from 'path';
-import { Version } from '../../models/version/version';
-import { ISource } from '../../models/source/source';
-import { Documentation } from '../../models/documentation/documentation';
+import { IVersion } from '../../models/version';
+import { ISource } from '../../models/source';
+import { IDocumentation } from '../../models/documentation';
 import { TemplateRenderer } from '../template/template';
 import { SourceRenderer } from '../source/source';
 
 export class VersionRenderer {
   public async render(
-    version: Version,
+    version: IVersion,
     options: {
-      documentation: Documentation;
+      documentation: IDocumentation;
       from: string;
       to: string;
       templatesDir: string;
@@ -24,8 +24,8 @@ export class VersionRenderer {
   }
 
   private renderIndex(
-    version: Version,
-    options: { documentation: Documentation; to: string; templatesDir: string }
+    version: IVersion,
+    options: { documentation: IDocumentation; to: string; templatesDir: string }
   ): Promise<void> {
     const toDir = resolve(options.to, version.id);
     return new TemplateRenderer().render(
@@ -42,10 +42,10 @@ export class VersionRenderer {
   }
 
   private renderSource(
-    version: Version,
+    version: IVersion,
     source: ISource,
     options: {
-      documentation: Documentation;
+      documentation: IDocumentation;
       from: string;
       to: string;
       templatesDir: string;

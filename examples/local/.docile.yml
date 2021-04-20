@@ -7,15 +7,18 @@ documentation:
       sources:
         src1:
           type: local
-          path: ./docs1
+          options:
+            path: ./docs1
         src2:
           type: local
-          path: ./docs2
-    # V12:
-    #   label: v12.x
-    #   sources:
-    #     src1:
-    #       type: local
-    #       path: ./docs1
+          options:
+            path: ./docs2
+    V12:
+      label: v12.x
+      sources:
+        src1:
+          type: local
+          options:
+            path: ./docs1
 build:
   outDir: ./public/docs

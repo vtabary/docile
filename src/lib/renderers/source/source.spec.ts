@@ -1,29 +1,15 @@
+import { ILocalSource } from '../../downloaders/source/local/local';
 import * as file from '../../helpers/file/file';
-import { MockedLogger } from '../../logger/logger.mock';
-import { Documentation } from '../../models/documentation/documentation';
-import { LocalSource } from '../../models/source/local/local';
-import { Version } from '../../models/version/version';
 import { MarkdownRenderer } from '../engines/mardown/markdown';
 import { TemplateRenderer } from '../template/template';
 import { SourceRenderer } from './source';
 
 describe('SourceRenderer', () => {
   let renderer: SourceRenderer;
-  let source: LocalSource;
+  let source: ILocalSource;
 
   beforeEach(() => {
-    source = new LocalSource(
-      { id: 'test', path: '/tmp/test' },
-      {
-        logger: new MockedLogger(),
-        buildContext: {
-          cwd: '/some',
-          outDir: '/some/out',
-          templatesDir: '/some/templates',
-          tmpDir: 'some/.tmp',
-        },
-      }
-    );
+    source = { id: 'test', type: 'local', options: { path: '/tmp/test' } };
   });
 
   describe('#new', () => {
@@ -59,22 +45,22 @@ describe('SourceRenderer', () => {
       });
       await expect(
         renderer.render(source, {
-          documentation: new Documentation({}),
+          documentation: { versions: [] },
           from: '/tmp/from',
           to: '/tmp/to',
           templatesDir: '/tmp/templates',
-          version: new Version({ id: 'test' }),
+          version: { id: 'test', sources: [] },
         })
       ).rejects.toThrow();
     });
 
     it('should process the sources', async () => {
       await renderer.render(source, {
-        documentation: new Documentation({}),
+        documentation: { versions: [] },
         from: '/tmp/from',
         to: '/tmp/to',
         templatesDir: '/tmp/templates',
-        version: new Version({ id: 'test' }),
+        version: { id: 'test', sources: [] },
       });
 
       await expect(spyTemplateGenerate).toHaveBeenCalledTimes(2);

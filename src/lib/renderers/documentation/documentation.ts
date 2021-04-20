@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import { Documentation } from '../../models/documentation/documentation';
+import { IDocumentation } from '../../models/documentation';
 import { copyFiles } from '../../helpers/file/file';
 import { VersionRenderer } from '../version/version';
 import { TemplateRenderer } from '../template/template';
@@ -20,7 +20,7 @@ export class DocumentationRenderer {
   }
 
   public async render(
-    documentation: Documentation,
+    documentation: IDocumentation,
     options: {
       from: string;
       to: string;
@@ -36,7 +36,7 @@ export class DocumentationRenderer {
   }
 
   private async renderFiles(
-    documentation: Documentation,
+    documentation: IDocumentation,
     options: {
       from: string;
       to: string;

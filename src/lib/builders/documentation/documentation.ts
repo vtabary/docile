@@ -1,31 +1,46 @@
-import { Logger } from '../../logger/logger';
-import { IBuildContext } from '../../models/build-context/build-context';
-import { Documentation } from '../../models/documentation/documentation';
-import { IVersionConfiguration, VersionBuilder } from '../version/version';
+import { IDocumentation } from '../../models/documentation';
+import { VersionBuilder } from '../version/version';
+import { IVersionConfiguration } from '../version/version';
 
 export interface IDocumentationConfiguration {
   label?: string;
-  versions?: { [key: string]: IVersionConfiguration };
+  versions: { [key: string]: IVersionConfiguration };
 }
 
 export class DocumentationBuilder {
-  private versionBuilder: VersionBuilder;
+  private versionBuilder = new VersionBuilder();
 
-  constructor(
-    private buildContext: IBuildContext,
-    options: { logger: Logger }
-  ) {
-    this.versionBuilder = new VersionBuilder(this.buildContext, options);
+  /**
+   * Convert a configuration to a valid object
+   * @param data
+   * @returns the new object
+   */
+  public build(documentation: IDocumentationConfiguration): IDocumentation {
+    const versions = Object.entries(
+      documentation.versions || {}
+    ).map(([key, value]) => this.versionBuilder.build(key, value));
+
+    return {
+      label: documentation.label,
+      versions,
+    };
   }
 
-  public build(data: IDocumentationConfiguration = {}): Documentation {
-    const versions = Object.entries(data.versions || {}).map(([key, value]) =>
-      this.versionBuilder.build({ id: key, ...value })
+  /**
+   * Validate a configuration for a documentation
+   * @param data the do
+   * @returns
+   */
+  public validate(
+    data?: IDocumentationConfiguration
+  ): data is IDocumentationConfiguration {
+    const versionBuilder = new VersionBuilder();
+    return (
+      !!data?.versions &&
+      Object.keys(data.versions).length > 0 &&
+      Object.values(data.versions).every((version) =>
+        versionBuilder.validate(version)
+      )
     );
-
-    return new Documentation({
-      label: data.label,
-      versions,
-    });
   }
 }

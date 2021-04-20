@@ -1,15 +1,13 @@
-import { MockedLogger } from '../../logger/logger.mock';
-import { Documentation } from '../../models/documentation/documentation';
-import { LocalSource } from '../../models/source/local/local';
-import { Version } from '../../models/version/version';
+import { IDocumentation } from '../../models/documentation';
+import { IVersion } from '../../models/version';
 import { SourceRenderer } from '../source/source';
 import { TemplateRenderer } from '../template/template';
 import { VersionRenderer } from './version';
 
 describe('VersionRenderer', () => {
   let renderer: VersionRenderer;
-  let documentation: Documentation;
-  let version: Version;
+  let documentation: IDocumentation;
+  let version: IVersion;
   let spySourceRender: jest.SpyInstance;
   let spyTemplateRenderer: jest.SpyInstance;
 
@@ -19,31 +17,23 @@ describe('VersionRenderer', () => {
     spySourceRender = jest.spyOn(SourceRenderer.prototype, 'render');
     spySourceRender.mockImplementation(async () => undefined);
 
-    version = new Version({
+    version = {
       id: 'test',
       sources: [
-        new LocalSource(
-          {
-            id: 'local',
+        {
+          id: 'local',
+          type: 'local',
+          options: {
             path: '/test',
           },
-          {
-            buildContext: {
-              cwd: '/test',
-              outDir: '/test/out',
-              templatesDir: '/test/templates',
-              tmpDir: '/test/.tmp',
-            },
-            logger: new MockedLogger(),
-          }
-        ),
+        },
       ],
-    });
+    };
 
-    documentation = new Documentation({
+    documentation = {
       label: 'test',
       versions: [version],
-    });
+    };
   });
 
   describe('#new', () => {

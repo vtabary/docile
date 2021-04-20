@@ -1,6 +1,6 @@
 import { resolve, basename } from 'path';
 import { writeFile } from '../../helpers/file/file';
-import { Documentation } from '../../models/documentation/documentation';
+import { IDocumentation } from '../../models/documentation';
 import { EJSRenderer } from '../engines/ejs/ejs';
 
 export class TemplateRenderer {
@@ -8,7 +8,7 @@ export class TemplateRenderer {
     templatePath: string,
     to: string,
     options: {
-      data: { documentation: Documentation; [key: string]: any };
+      data: { documentation: IDocumentation; [key: string]: unknown };
       fileName?: string;
     }
   ): Promise<void> {

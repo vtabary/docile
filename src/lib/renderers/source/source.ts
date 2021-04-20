@@ -1,8 +1,8 @@
 import { basename, resolve } from 'path';
-import { ISource } from '../../models/source/source';
-import { Documentation } from '../../models/documentation/documentation';
-import { Version } from '../../models/version/version';
 import { listFiles } from '../../helpers/file/file';
+import { IDocumentation } from '../../models/documentation';
+import { ISource } from '../../models/source';
+import { IVersion } from '../../models/version';
 import { MarkdownRenderer } from '../engines/mardown/markdown';
 import { TemplateRenderer } from '../template/template';
 
@@ -10,8 +10,8 @@ export class SourceRenderer {
   public async render(
     source: ISource,
     options: {
-      documentation: Documentation;
-      version: Version;
+      documentation: IDocumentation;
+      version: IVersion;
       from: string;
       to: string;
       templatesDir: string;
@@ -37,8 +37,8 @@ export class SourceRenderer {
   private renderFile(
     filePath: string,
     options: {
-      documentation: Documentation;
-      version: Version;
+      documentation: IDocumentation;
+      version: IVersion;
       from: string;
       to: string;
       templatesDir: string;

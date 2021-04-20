@@ -1,55 +1,77 @@
-import { MockedLogger } from '../../logger/logger.mock';
-import { IBuildContext } from '../../models/build-context/build-context';
-import { Documentation } from '../../models/documentation/documentation';
-import { DocumentationBuilder } from './documentation';
+import {
+  DocumentationBuilder,
+  IDocumentationConfiguration,
+} from './documentation';
 
 describe('DocumentationBuilder', () => {
   let builder: DocumentationBuilder;
-  let context: IBuildContext;
-  let logger: MockedLogger;
+  let config: IDocumentationConfiguration;
 
   beforeEach(() => {
-    context = {
-      cwd: '/test',
-      outDir: '/test/out',
-      templatesDir: '/test/templates',
-      tmpDir: '/test/.tmp',
+    config = {
+      label: 'test',
+      versions: {
+        test: {
+          sources: {
+            test: {
+              type: 'test',
+              options: {},
+            },
+          },
+        },
+      },
     };
-
-    logger = new MockedLogger();
   });
 
   describe('#new', () => {
     it('should create a new instance', () => {
-      expect(() => new DocumentationBuilder(context, { logger })).not.toThrow();
+      expect(() => new DocumentationBuilder()).not.toThrow();
     });
   });
 
   describe('#build', () => {
     beforeEach(() => {
-      builder = new DocumentationBuilder(context, { logger });
+      builder = new DocumentationBuilder();
     });
 
     it('should return a Documentation object', () => {
-      const documentation = builder.build({ label: 'test', versions: {} });
-      expect(documentation).toEqual(expect.any(Documentation));
-      expect(documentation).toEqual(
-        expect.objectContaining({
-          label: 'test',
-          versions: [],
-        })
-      );
+      const documentation = builder.build(config);
+      expect(documentation).toEqual({
+        label: 'test',
+        versions: [
+          {
+            id: 'test',
+            sources: [
+              {
+                id: 'test',
+                type: 'test',
+                options: {},
+              },
+            ],
+          },
+        ],
+      });
+    });
+  });
+
+  describe('#validate', () => {
+    beforeEach(() => {
+      builder = new DocumentationBuilder();
     });
 
-    it('should set the versions', () => {
-      const documentation = builder.build({
-        versions: { test: { sources: {} } },
-      });
-      expect(documentation).toEqual(
-        expect.objectContaining({
-          versions: [expect.objectContaining({ id: 'test', sources: [] })],
-        })
-      );
+    it('should return true when the documentation has no label', () => {
+      delete config.label;
+      expect(builder.validate(config)).toBe(true);
+    });
+
+    it('should return true when the documentation has no label', () => {
+      delete (config as any).versions;
+      expect(builder.validate(config)).toBe(false);
+    });
+
+    it('should return true when the documentation has no label', () => {
+      delete config.label;
+      expect(builder.validate(config)).toBe(true);
     });
   });
 });

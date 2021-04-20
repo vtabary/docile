@@ -6,6 +6,7 @@ documentation:
       sources:
         src1:
           type: http
-          path: https://github.com/vtabary/docile/archive/master.zip
+          options:
+            path: https://github.com/vtabary/docile/archive/master.zip
 build:
   outDir: ./public/docs

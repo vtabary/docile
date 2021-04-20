@@ -1,13 +1,12 @@
 import { MockedLogger } from '../../logger/logger.mock';
-import { Documentation } from '../../models/documentation/documentation';
-import { Version } from '../../models/version/version';
+import { IDocumentation } from '../../models/documentation';
 import { TemplateRenderer } from '../template/template';
 import { VersionRenderer } from '../version/version';
 import { DocumentationRenderer, WRAPPERS } from './documentation';
 
 describe('DocumentationRenderer', () => {
   let renderer: DocumentationRenderer;
-  let documentation: Documentation;
+  let documentation: IDocumentation;
   let spyVersionRender: jest.SpyInstance;
   let spyTemplateRender: jest.SpyInstance;
   let spyCopy: jest.SpyInstance;
@@ -21,10 +20,10 @@ describe('DocumentationRenderer', () => {
     spyCopy = jest.spyOn(WRAPPERS, 'copyFiles');
     spyCopy.mockImplementation(async () => undefined);
 
-    documentation = new Documentation({
+    documentation = {
       label: 'test',
-      versions: [new Version({ id: 'test1' })],
-    });
+      versions: [{ id: 'test1', sources: [] }],
+    };
 
     logger = new MockedLogger();
   });

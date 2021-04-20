@@ -1,5 +1,4 @@
 import * as file from '../../helpers/file/file';
-import { Documentation } from '../../models/documentation/documentation';
 import { EJSRenderer } from '../engines/ejs/ejs';
 import { TemplateRenderer } from './template';
 
@@ -24,7 +23,7 @@ describe('TemplateRenderer', () => {
 
     it('should convert the file content into rendered HTML', async () => {
       await renderer.render('/tmp/test', '/tmp/dest', {
-        data: { documentation: new Documentation({}) },
+        data: { documentation: { versions: [] } },
       });
       expect(file.writeFile).toHaveBeenCalledWith(
         '/tmp/dest/test',

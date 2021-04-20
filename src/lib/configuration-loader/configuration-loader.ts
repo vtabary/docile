@@ -2,14 +2,13 @@ import findUp from 'find-up';
 import { dirname, resolve } from 'path';
 import { promises } from 'fs';
 import { load as yamlLoad } from 'js-yaml';
-import { Documentation } from '../models/documentation/documentation';
-import { IBuildContext } from '../models/build-context/build-context';
+import { IDocumentation } from '../models/documentation';
+import { IBuildContext } from '../models/build-context';
 import { ContextBuilder } from '../builders/context/context';
 import {
   DocumentationBuilder,
   IDocumentationConfiguration,
 } from '../builders/documentation/documentation';
-import { Logger } from '../logger/logger';
 
 export interface IConfigurationFile {
   documentation?: IDocumentationConfiguration;
@@ -19,7 +18,7 @@ export interface IConfigurationFile {
 }
 
 export interface IConfiguration {
-  documentation: Documentation;
+  documentation: IDocumentation;
   build: IBuildContext;
 }
 
@@ -31,12 +30,6 @@ export const WRAPPERS = {
 };
 
 export class Configurationloader {
-  private logger: Logger;
-
-  constructor(options: { logger: Logger }) {
-    this.logger = options.logger;
-  }
-
   /**
    * Read the YAML configuration file and parse it to return a Documentation object with its context
    * @param options.cwd the current working directory used as a reference in the context in case of relative paths
@@ -47,11 +40,14 @@ export class Configurationloader {
     const buildContext = await new ContextBuilder().build(configuration.build, {
       cwd: dirname(configurationPath),
     });
+    const builder = new DocumentationBuilder();
+
+    if (!builder.validate(configuration.documentation)) {
+      throw new Error('Invalid configuration');
+    }
 
     return {
-      documentation: new DocumentationBuilder(buildContext, {
-        logger: this.logger,
-      }).build(configuration.documentation),
+      documentation: builder.build(configuration.documentation),
       build: buildContext,
     };
   }

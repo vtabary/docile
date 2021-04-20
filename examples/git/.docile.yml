@@ -6,7 +6,8 @@ documentation:
       sources:
         src1:
           type: git
-          path: https://github.com/vtabary/docile.git
-          branch: master
+          options:
+            path: https://github.com/vtabary/docile.git
+            branch: master
 build:
   outDir: ./public/docs
