@@ -5,3 +5,5 @@ examples/**/public
 examples/**/dist
 examples/**/.tmp
 coverage
+yarn-error.log
+yarn.lock

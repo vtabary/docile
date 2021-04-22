@@ -1,6 +1,16 @@
 # Docile documentation generator
 
-## Install
+Docile aims to render one unique documentation portal for multiple projects.
+
+It can get the documentation files from a few source types:
+
+- From local files
+- From git repositories
+- From an http endpoints
+
+It will downloads all the sources mapped into a `.docile.yml` file and render them as a single website. It supports multiple projects, and, for each project, multiple versions.
+
+## Installation
 
 ```bash
 # Local
@@ -39,7 +49,7 @@ Options:
   -h, --help                  output usage information
 ```
 
-## Test
+## Testing
 
 ### Examples
 
@@ -61,10 +71,21 @@ npx ts-node ./src/bin/docile.ts generate -p ./examples/git
 npx ts-node ./src/bin/docile.ts generate -p ./examples/http
 ```
 
-## TODO
+## Support
 
-- Add specs
+## Roadmap
+
 - Support summary files
 - Export the templates into an other library
 - Support custom templates as a libraries
 - Add markdown function to import a part of a code file
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
