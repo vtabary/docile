@@ -1,19 +1,34 @@
 {
-  "name": "@docile/documentation",
+  "name": "@vtabary/docile",
   "version": "0.0.0",
-  "description": "To kindly generate a documentation",
-  "main": "index.js",
+  "description": "To kindly generate a documentation website",
+  "main": "dist/index.js",
+  "bin": {
+    "docile": "dist/bin/docile.js"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "LICENSE",
+    "README.md"
+  ],
+  "private": "false",
   "scripts": {
     "build": "tsc",
     "start": "ts-node ./src/bin/docile",
     "test": "jest",
+    "coverage": "jest --coverage",
     "eslint": "eslint src/** --ext .ts"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vtabary/docile.git"
   },
-  "author": "Vincent Tabary <github@tabary.me>",
+  "author": {
+    "email": "github@tabary.me",
+    "name": "Vincent Tabary",
+    "url": "http://vincent.tabary.me"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/vtabary/docile/issues"
