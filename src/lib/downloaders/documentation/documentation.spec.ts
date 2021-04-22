@@ -44,7 +44,10 @@ describe('DocumentationDownloader', () => {
     it('should call the download method of each version', async () => {
       await downloader.download({ documentation });
       expect(spyRenderer).toHaveBeenCalledTimes(1);
-      expect(spyRenderer).toHaveBeenCalledWith(documentation.versions[0]);
+      expect(spyRenderer).toHaveBeenCalledWith({
+        documentation,
+        version: documentation.versions[0],
+      });
     });
 
     it('should reject when at least one version is rejecting', async () => {

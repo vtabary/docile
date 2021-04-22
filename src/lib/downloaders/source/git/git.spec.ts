@@ -28,11 +28,11 @@ describe('GitSourceDownloader', () => {
       versions: [],
     };
     version = {
-      id: 'test',
+      id: 'test-version',
       sources: [],
     };
     source = {
-      id: 'test',
+      id: 'test-source',
       type: 'git',
       options: {
         url: 'git@github.com:vtabary/docile.git',
@@ -59,10 +59,10 @@ describe('GitSourceDownloader', () => {
       await downloader.download({ documentation, version, source });
       expect(options.logger.info).toHaveBeenCalledWith(`Cloning files...
   from "git@github.com:vtabary/docile.git"
-  to "/some/.tmp/test"`);
+  to "/some/.tmp/test-version/test-source"`);
       expect(mGit.clone).toHaveBeenCalledWith(
         'git@github.com:vtabary/docile.git',
-        '/some/.tmp/test'
+        '/some/.tmp/test-version/test-source'
       );
       expect(mGit.checkout).toHaveBeenCalledWith('some-branch');
     });

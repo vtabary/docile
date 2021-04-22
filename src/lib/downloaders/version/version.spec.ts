@@ -50,7 +50,11 @@ describe('VersionDownloader', () => {
     it('should call the download method of each source', async () => {
       await downloader.download({ documentation, version });
       expect(spySource).toHaveBeenCalledTimes(1);
-      expect(spySource).toHaveBeenCalledWith(version.sources[0]);
+      expect(spySource).toHaveBeenCalledWith({
+        documentation,
+        version,
+        source: version.sources[0],
+      });
     });
 
     it('should reject when at least one source is rejecting', async () => {

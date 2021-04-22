@@ -24,11 +24,11 @@ describe('LocalSourceDownloader', () => {
       versions: [],
     };
     version = {
-      id: 'test',
+      id: 'test-version',
       sources: [],
     };
     source = {
-      id: 'test',
+      id: 'test-source',
       type: 'local',
       options: {
         path: '/dir/content.md',
@@ -54,8 +54,11 @@ describe('LocalSourceDownloader', () => {
       await downloader.download({ documentation, version, source });
       expect(options.logger.info).toHaveBeenCalledWith(`Copying local files...
   from "/dir/content.md"
-  to "/some/.tmp/test"`);
-      expect(mCopy).toHaveBeenCalledWith('/dir/content.md', '/some/.tmp/test');
+  to "/some/.tmp/test-version/test-source"`);
+      expect(mCopy).toHaveBeenCalledWith(
+        '/dir/content.md',
+        '/some/.tmp/test-version/test-source'
+      );
     });
 
     it('should copy a dir', async () => {
@@ -64,8 +67,11 @@ describe('LocalSourceDownloader', () => {
       await downloader.download({ documentation, version, source });
       expect(options.logger.info).toHaveBeenCalledWith(`Copying local files...
   from "/some/dir"
-  to "/some/.tmp/test"`);
-      expect(mCopy).toHaveBeenCalledWith('/some/dir', '/some/.tmp/test');
+  to "/some/.tmp/test-version/test-source"`);
+      expect(mCopy).toHaveBeenCalledWith(
+        '/some/dir',
+        '/some/.tmp/test-version/test-source'
+      );
     });
 
     it('should throw when the download can not be done', async () => {

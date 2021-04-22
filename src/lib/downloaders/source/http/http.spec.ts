@@ -20,11 +20,11 @@ describe('HttpSourceDownloader', () => {
       versions: [],
     };
     version = {
-      id: 'test',
+      id: 'test-version',
       sources: [],
     };
     source = {
-      id: 'test',
+      id: 'test-source',
       type: 'http',
       options: {
         path: 'http://test/content.md',
@@ -50,10 +50,10 @@ describe('HttpSourceDownloader', () => {
       expect(options.logger.info)
         .toHaveBeenCalledWith(`Copying remote HTTP files...
   from "http://test/content.md"
-  to "/some/.tmp/test"`);
+  to "/some/.tmp/test-version/test-source"`);
       expect(mDownload).toHaveBeenCalledWith(
         'http://test/content.md',
-        '/some/.tmp/test',
+        '/some/.tmp/test-version/test-source',
         { extract: true }
       );
     });
