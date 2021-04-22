@@ -1,5 +1,7 @@
 # Docile documentation generator
 
+![Workflow status](https://github.com/vtabary/docile/actions/workflows/node-js.yml/badge.svg)
+
 Docile aims to render one unique documentation portal for multiple projects.
 
 It can get the documentation files from a few source types:
