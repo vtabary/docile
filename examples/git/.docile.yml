@@ -6,5 +6,5 @@ versions:
       src1:
         type: git
         options:
-          path: https://github.com/vtabary/docile.git
+          url: https://github.com/vtabary/docile.git
           branch: master

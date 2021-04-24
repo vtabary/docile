@@ -1,7 +1,7 @@
 import { resolve, basename } from 'path';
 import { writeFile } from '../../helpers/file/file';
 import { IDocumentation } from '../../models/documentation';
-import { EJSRenderer } from '../engines/ejs/ejs';
+import { ETARenderer } from '../engines/eta/eta';
 
 export class TemplateRenderer {
   public async render(
@@ -12,12 +12,12 @@ export class TemplateRenderer {
       fileName?: string;
     }
   ): Promise<void> {
-    const content = await new EJSRenderer().render(templatePath, {
+    const content = await new ETARenderer().render(templatePath, {
       data: options.data,
     });
     return writeFile(
       resolve(to, options.fileName || basename(templatePath)),
-      content
+      content || ''
     );
   }
 }

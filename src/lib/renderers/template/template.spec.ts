@@ -1,5 +1,5 @@
 import * as file from '../../helpers/file/file';
-import { EJSRenderer } from '../engines/ejs/ejs';
+import { ETARenderer } from '../engines/eta/eta';
 import { TemplateRenderer } from './template';
 
 describe('TemplateRenderer', () => {
@@ -14,7 +14,7 @@ describe('TemplateRenderer', () => {
   describe('#render', () => {
     beforeEach(() => {
       jest
-        .spyOn(EJSRenderer.prototype, 'render')
+        .spyOn(ETARenderer.prototype, 'render')
         .mockImplementation(async () => 'rendered file');
       jest.spyOn(file, 'writeFile').mockImplementation(async () => undefined);
 

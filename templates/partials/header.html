@@ -1,0 +1,12 @@
+<header>
+  <h1><a href="/"><%= it.documentation.label %></a></h1>
+  <nav>
+    <ul>
+      <% it.documentation.versions.forEach(version => {%>
+      <li>
+        <a href="/<%= version.id %>"><%= version.label %></a>
+      </li>
+      <% })%>
+    </ul>
+  </nav>
+</header>

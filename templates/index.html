@@ -1,8 +1,3 @@
-<h1><%= documentation.label %></h1>
-<ul>
-  <% documentation.versions.forEach(version => {%>
-  <li>
-    <a href="/<%= version.id %>"><%= version.label %></a>
-  </li>
-  <% })%>
-</ul>
+<% layout('partials/layout.html') %>
+
+<section>Summary</section>

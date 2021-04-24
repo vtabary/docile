@@ -1,4 +1,4 @@
-import simplegit from 'simple-git/promise';
+import simplegit, { SimpleGit } from 'simple-git';
 import { MockedLogger } from '../../../logger/logger.mock';
 import { IDocumentation } from '../../../models/documentation';
 import { IVersion } from '../../../models/version';
@@ -10,7 +10,7 @@ describe('GitSourceDownloader', () => {
   let version: IVersion;
   let source: IGitSource;
   let options: { logger: MockedLogger; cwd: string; downloadDir: string };
-  let mGit: simplegit.SimpleGit;
+  let mGit: SimpleGit;
   let spyClone: jest.SpyInstance;
   let spyCheckout: jest.SpyInstance;
 

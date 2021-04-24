@@ -1,4 +1,4 @@
-import simpleGit from 'simple-git/promise';
+import simpleGit, { SimpleGit } from 'simple-git';
 import { resolve } from 'path';
 import { Logger } from '../../../logger/logger';
 import { ISource } from '../../../models/source';
@@ -10,7 +10,7 @@ import { IDocumentation } from '../../../models/documentation';
  * For test purpose only
  */
 export const WRAPPERS = {
-  git: (): simpleGit.SimpleGit => simpleGit(),
+  git: (): SimpleGit => simpleGit(),
 };
 
 export type IGitSource = ISource<{ url: string; branch?: string }, 'git'>;

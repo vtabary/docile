@@ -4,7 +4,7 @@ import { DocumentationRenderer } from '../renderers/documentation/documentation'
 import { DocumentationDownloader } from '../downloaders/documentation/documentation';
 import { IDocumentation } from '../models/documentation';
 import { IBuildContext } from '../models/build-context';
-import { ContextBuilder } from '../builders/context/context';
+import { resolve } from 'path';
 
 export class DocileCli {
   private logger: Logger;
@@ -74,12 +74,12 @@ export class DocileCli {
     if (!this.configuration) {
       this.configuration = {
         documentation: await new ConfigurationLoader().load(options),
-        build: new ContextBuilder().build({
+        build: {
           cwd: options.projectDir,
-          outDir: options.tmpDir,
-          templatesDir: options.templates,
-          tmpDir: options.tmpDir,
-        }),
+          outDir: resolve(options.outDir || 'public'),
+          templatesDir: resolve(options.templates),
+          tmpDir: resolve(options.tmpDir || '.tmp'),
+        },
       };
     }
 

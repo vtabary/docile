@@ -1,11 +1,11 @@
-import { EJSRenderer, WRAPPERS } from './ejs';
+import { ETARenderer, WRAPPERS } from './eta';
 
-describe('EJSRenderer', () => {
-  let generator: EJSRenderer;
+describe('ETARenderer', () => {
+  let generator: ETARenderer;
 
   describe('#new', () => {
     it('should create an instance', () => {
-      expect(() => new EJSRenderer()).not.toThrow();
+      expect(() => new ETARenderer()).not.toThrow();
     });
   });
 
@@ -17,7 +17,7 @@ describe('EJSRenderer', () => {
         .spyOn(WRAPPERS, 'renderFile')
         .mockImplementation(async () => 'rendered file');
 
-      generator = new EJSRenderer();
+      generator = new ETARenderer();
     });
 
     it("should throw when the file can't be rendered", async () => {

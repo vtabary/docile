@@ -37,7 +37,6 @@
   "devDependencies": {
     "@types/decompress": "^4.2.3",
     "@types/download": "^6.2.4",
-    "@types/ejs": "^3.0.1",
     "@types/file-type": "^10.9.1",
     "@types/fs-extra": "^8.1.0",
     "@types/jest": "^26.0.20",
@@ -58,13 +57,13 @@
   "dependencies": {
     "commander": "^4.1.1",
     "download": "^7.1.0",
-    "ejs": "^3.0.1",
+    "eta": "^1.12.1",
     "find-up": "^4.1.0",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.0",
     "js-yaml": "^4.0.0",
     "marked": "^0.8.0",
-    "simple-git": "^1.131.0"
+    "simple-git": "^2.0.0"
   },
   "husky": {
     "hooks": {

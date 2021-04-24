@@ -80,9 +80,11 @@ npx ts-node ./src/bin/docile.ts generate -p ./examples/http -o ./public/docs
 
 ## Roadmap
 
+- Generate a list of file for each version
 - Support summary files
+- Support customization with copyright, logo, favicon, base url, ...
 - Export the templates into an other library
-- Support custom templates as a libraries
+- Support custom templates as libraries
 - Add markdown function to import a part of a code file
 
 ## Contributing
