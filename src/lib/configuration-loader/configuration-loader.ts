@@ -1,26 +1,12 @@
 import findUp from 'find-up';
-import { dirname, resolve } from 'path';
+import { resolve } from 'path';
 import { promises } from 'fs';
 import { load as yamlLoad } from 'js-yaml';
 import { IDocumentation } from '../models/documentation';
-import { IBuildContext } from '../models/build-context';
-import { ContextBuilder } from '../builders/context/context';
 import {
   DocumentationBuilder,
   IDocumentationConfiguration,
-} from '../builders/documentation/documentation';
-
-export interface IConfigurationFile {
-  documentation?: IDocumentationConfiguration;
-  build?: {
-    outDir?: string;
-  };
-}
-
-export interface IConfiguration {
-  documentation: IDocumentation;
-  build: IBuildContext;
-}
+} from './documentation/documentation';
 
 /**
  * For test purpose only
@@ -32,39 +18,33 @@ export const WRAPPERS = {
 export class ConfigurationLoader {
   /**
    * Read the YAML configuration file and parse it to return a Documentation object with its context
-   * @param options.cwd the current working directory used as a reference in the context in case of relative paths
+   * @param options.projectDir the current working directory used as a reference in the context in case of relative paths
    */
-  public async load(options?: { cwd?: string }): Promise<IConfiguration> {
+  public async load(options: { projectDir: string }): Promise<IDocumentation> {
     const configurationPath = await this.getConfigutationFilePath(options);
-    const configuration = await this.readFile(configurationPath);
-    const buildContext = await new ContextBuilder().build(configuration.build, {
-      cwd: dirname(configurationPath),
-    });
+    const documentation = await this.readFile(configurationPath);
     const builder = new DocumentationBuilder();
 
-    if (!builder.validate(configuration.documentation)) {
+    if (!builder.validate(documentation)) {
       throw new Error('Invalid configuration');
     }
 
-    return {
-      documentation: builder.build(configuration.documentation),
-      build: buildContext,
-    };
+    return builder.build(documentation);
   }
 
   /**
    * Read and parse the YAML configuration file, or return an empty object when the parsing failed
    * @param path the configuration file path
    */
-  private async readFile(path: string): Promise<IConfigurationFile> {
+  private async readFile(path: string): Promise<IDocumentationConfiguration> {
     const data = await promises.readFile(path, { encoding: 'utf-8' });
     try {
       const parsedData = yamlLoad(data, { filename: path });
       return typeof parsedData === 'object'
-        ? (parsedData as IConfigurationFile)
-        : {};
+        ? (parsedData as IDocumentationConfiguration)
+        : { versions: {} };
     } catch (e) {
-      return {};
+      return { versions: {} };
     }
   }
 
@@ -74,11 +54,11 @@ export class ConfigurationLoader {
    * It throws when no file can been found
    * @param options.cwd the directory in which we should start the search for a configuraiton file. Default: process.cwd()
    */
-  private async getConfigutationFilePath(
-    options: { cwd?: string } = {}
-  ): Promise<string> {
+  private async getConfigutationFilePath(options: {
+    projectDir: string;
+  }): Promise<string> {
     const filePath = await WRAPPERS.findUp('.docile.yml', {
-      cwd: options.cwd ? resolve(options.cwd) : process.cwd(),
+      cwd: resolve(options.projectDir),
     });
 
     if (!filePath) {

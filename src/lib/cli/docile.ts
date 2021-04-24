@@ -4,6 +4,7 @@ import { DocumentationRenderer } from '../renderers/documentation/documentation'
 import { DocumentationDownloader } from '../downloaders/documentation/documentation';
 import { IDocumentation } from '../models/documentation';
 import { IBuildContext } from '../models/build-context';
+import { ContextBuilder } from '../builders/context/context';
 
 export class DocileCli {
   private logger: Logger;
@@ -20,11 +21,18 @@ export class DocileCli {
    * Download the assets from the sources in configuration and generate the documentation
    * @param options.cwd the working directory to consider
    */
-  public async generate(options: { cwd?: string } = {}): Promise<void> {
-    // Download the assets
-    await this.download(options);
+  public async generate(options: {
+    projectDir: string;
+    templates: string;
+    outDir?: string;
+    tmpDir?: string;
+  }): Promise<void> {
     // Parse configuration
     const configuration = await this.loadConfiguration(options);
+
+    // Download the assets
+    await this.download(configuration);
+
     // Generate the documentation
     await new DocumentationRenderer({ logger: this.logger }).render(
       configuration.documentation,
@@ -40,9 +48,10 @@ export class DocileCli {
    * Download all the assets from the sources
    * @param options.cwd the working directory to consider
    */
-  public async download(options: { cwd?: string } = {}): Promise<void> {
-    // Parse configuration
-    const configuration = await this.loadConfiguration(options);
+  private async download(configuration: {
+    documentation: IDocumentation;
+    build: IBuildContext;
+  }): Promise<void> {
     // Download the assets
     await new DocumentationDownloader({
       cwd: configuration.build.cwd,
@@ -56,11 +65,22 @@ export class DocileCli {
    * @param options.cwd the working directory to consider
    * @returns the parsed configuration
    */
-  private async loadConfiguration(
-    options: { cwd?: string } = {}
-  ): Promise<{ documentation: IDocumentation; build: IBuildContext }> {
+  private async loadConfiguration(options: {
+    projectDir: string;
+    templates: string;
+    outDir?: string;
+    tmpDir?: string;
+  }): Promise<{ documentation: IDocumentation; build: IBuildContext }> {
     if (!this.configuration) {
-      this.configuration = await new ConfigurationLoader().load(options);
+      this.configuration = {
+        documentation: await new ConfigurationLoader().load(options),
+        build: new ContextBuilder().build({
+          cwd: options.projectDir,
+          outDir: options.tmpDir,
+          templatesDir: options.templates,
+          tmpDir: options.tmpDir,
+        }),
+      };
     }
 
     return this.configuration;

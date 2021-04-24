@@ -47,8 +47,11 @@ Usage: docile generate [options]
 Generate the documentation based on the .docile.yml file
 
 Options:
-  -p, --project <projet_dir>  The documentation project directory (default: "C:\\Users\\vince\\Developpement\\vtabary\\docile")
-  -h, --help                  output usage information
+  -p, --project-dir <project_dir>  The documentation project directory (default: current working directory)
+  -o, --out-dir <dir>              The directory where to save the rendered views, relative to the project directory
+  -t, --theme <module>             The directory or module where to find the templates to use, relative to the project directory (default: "@docile/default-theme")
+  --tmp-dir <dir>                  The directory where to save the rendered views, relative to the project directory
+  -h, --help                       output usage information
 ```
 
 ## Testing
@@ -58,19 +61,19 @@ Options:
 #### Local
 
 ```bash
-npx ts-node ./src/bin/docile.ts generate -p ./examples/local
+npx ts-node ./src/bin/docile.ts generate -p ./examples/local -o ./public/docs
 ```
 
 #### Remote Git repositories
 
 ```bash
-npx ts-node ./src/bin/docile.ts generate -p ./examples/git
+npx ts-node ./src/bin/docile.ts generate -p ./examples/git -o ./public/docs
 ```
 
 #### Remote HTTP packages
 
 ```bash
-npx ts-node ./src/bin/docile.ts generate -p ./examples/http
+npx ts-node ./src/bin/docile.ts generate -p ./examples/http -o ./public/docs
 ```
 
 ## Support

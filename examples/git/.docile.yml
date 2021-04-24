@@ -1,13 +1,10 @@
-documentation:
-  label: Documentation from Git
-  versions:
-    latest:
-      label: Latest
-      sources:
-        src1:
-          type: git
-          options:
-            path: https://github.com/vtabary/docile.git
-            branch: master
-build:
-  outDir: ./public/docs
+label: Documentation from Git
+versions:
+  latest:
+    label: Latest
+    sources:
+      src1:
+        type: git
+        options:
+          path: https://github.com/vtabary/docile.git
+          branch: master

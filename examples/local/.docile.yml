@@ -1,24 +1,21 @@
-documentation:
-  label: Local documentation
-  summary: ./summary.md
-  versions:
-    latest:
-      label: latest
-      sources:
-        src1:
-          type: local
-          options:
-            path: ./docs1
-        src2:
-          type: local
-          options:
-            path: ./docs2
-    V12:
-      label: v12.x
-      sources:
-        src1:
-          type: local
-          options:
-            path: ./docs1
-build:
-  outDir: ./public/docs
+label: Local documentation
+summary: ./summary.md
+versions:
+  latest:
+    label: latest
+    sources:
+      src1:
+        type: local
+        options:
+          path: ./docs1
+      src2:
+        type: local
+        options:
+          path: ./docs2
+  V12:
+    label: v12.x
+    sources:
+      src1:
+        type: local
+        options:
+          path: ./docs1
