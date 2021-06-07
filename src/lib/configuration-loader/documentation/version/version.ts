@@ -1,4 +1,4 @@
-import { IVersion } from '../../models/version';
+import { IVersion } from '../../../models/version';
 import { ISourceConfiguration, SourceBuilder } from '../source/source';
 
 export interface IVersionConfiguration {

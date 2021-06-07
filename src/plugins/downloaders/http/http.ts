@@ -1,10 +1,13 @@
 import download from 'download';
 import { resolve } from 'path';
-import { Logger } from '../../../logger/logger';
-import { IDocumentation } from '../../../models/documentation';
-import { ISource } from '../../../models/source';
-import { IVersion } from '../../../models/version';
-import { ISourceDownloader } from '../source';
+import {
+  Logger,
+  IDocumentation,
+  ISource,
+  IVersion,
+  ISourceDownloader,
+  IPluginEntry,
+} from '@lib';
 
 /**
  * For test purpose only
@@ -38,3 +41,9 @@ export class HttpSourceDownloader implements ISourceDownloader {
     await WRAPPERS.download(data.source.options.path, to, { extract: true });
   }
 }
+
+export default {
+  class: HttpSourceDownloader,
+  sourceType: 'http',
+  type: 'downloader',
+} as IPluginEntry;

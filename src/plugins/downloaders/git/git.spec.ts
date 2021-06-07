@@ -1,7 +1,5 @@
 import simplegit, { SimpleGit } from 'simple-git';
-import { MockedLogger } from '../../../logger/logger.mock';
-import { IDocumentation } from '../../../models/documentation';
-import { IVersion } from '../../../models/version';
+import { MockedLogger, IDocumentation, IVersion } from '@lib';
 import { GitSourceDownloader, IGitSource, WRAPPERS } from './git';
 
 describe('GitSourceDownloader', () => {

@@ -1,10 +1,13 @@
 import { copy } from 'fs-extra';
 import { resolve } from 'path';
-import { Logger } from '../../../logger/logger';
-import { IDocumentation } from '../../../models/documentation';
-import { ISource } from '../../../models/source';
-import { IVersion } from '../../../models/version';
-import { ISourceDownloader } from '../source';
+import {
+  Logger,
+  IDocumentation,
+  ISource,
+  IVersion,
+  ISourceDownloader,
+  IPluginEntry,
+} from '@lib';
 
 /**
  * For test purpose only
@@ -40,3 +43,9 @@ export class LocalSourceDownloader implements ISourceDownloader {
     return WRAPPERS.copy(from, to);
   }
 }
+
+export default {
+  class: LocalSourceDownloader,
+  type: 'downloader',
+  sourceType: 'local',
+} as IPluginEntry;

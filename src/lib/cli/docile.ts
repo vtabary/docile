@@ -5,13 +5,23 @@ import { DocumentationDownloader } from '../downloaders/documentation/documentat
 import { IDocumentation } from '../models/documentation';
 import { IBuildContext } from '../models/build-context';
 import { resolve } from 'path';
+import { PluginRegistry } from '../plugin-registry/plugin-registry';
+import { ISourceDownloader } from '../downloaders/source/source';
+import { ITemplateRenderer } from '../renderers/source/source';
+import { RendererHelper } from '../helpers/renderer/renderer';
+
+interface IConfigurationObject {
+  documentation: IDocumentation;
+  build: IBuildContext;
+  plugins: {
+    renderers: PluginRegistry<ITemplateRenderer>;
+    downloaders: PluginRegistry<ISourceDownloader>;
+  };
+}
 
 export class DocileCli {
   private logger: Logger;
-  private configuration?: {
-    documentation: IDocumentation;
-    build: IBuildContext;
-  };
+  private configuration?: IConfigurationObject;
 
   constructor(options: { logger: Logger }) {
     this.logger = options.logger;
@@ -34,29 +44,30 @@ export class DocileCli {
     await this.download(configuration);
 
     // Generate the documentation
-    await new DocumentationRenderer({ logger: this.logger }).render(
-      configuration.documentation,
-      {
-        from: configuration.build.tmpDir,
-        to: configuration.build.outDir,
+    await new DocumentationRenderer({
+      logger: this.logger,
+      renderer: new RendererHelper({
         templatesDir: configuration.build.templatesDir,
-      }
-    );
+        renderers: configuration.plugins.renderers,
+        baseUrl: '/',
+      }),
+    }).render(configuration.documentation, {
+      from: configuration.build.tmpDir,
+      to: configuration.build.outDir,
+    });
   }
 
   /**
    * Download all the assets from the sources
    * @param options.cwd the working directory to consider
    */
-  private async download(configuration: {
-    documentation: IDocumentation;
-    build: IBuildContext;
-  }): Promise<void> {
+  private async download(configuration: IConfigurationObject): Promise<void> {
     // Download the assets
     await new DocumentationDownloader({
       cwd: configuration.build.cwd,
       downloadDir: configuration.build.tmpDir,
       logger: this.logger,
+      downloaders: configuration.plugins.downloaders,
     }).download({ documentation: configuration.documentation });
   }
 
@@ -70,19 +81,28 @@ export class DocileCli {
     templates: string;
     outDir?: string;
     tmpDir?: string;
-  }): Promise<{ documentation: IDocumentation; build: IBuildContext }> {
-    if (!this.configuration) {
-      this.configuration = {
-        documentation: await new ConfigurationLoader().load(options),
-        build: {
-          cwd: options.projectDir,
-          outDir: resolve(options.outDir || 'public'),
-          templatesDir: resolve(options.templates),
-          tmpDir: resolve(options.tmpDir || '.tmp'),
-        },
-      };
+  }): Promise<IConfigurationObject> {
+    if (this.configuration) {
+      return this.configuration;
     }
 
-    return this.configuration;
+    const tmpDir = resolve(options.tmpDir || '.tmp');
+
+    const configuration = await new ConfigurationLoader({
+      logger: this.logger,
+    }).load({
+      downloadDir: tmpDir,
+      projectDir: options.projectDir,
+    });
+
+    return (this.configuration = {
+      ...configuration,
+      build: {
+        cwd: options.projectDir,
+        outDir: resolve(options.outDir || 'public'),
+        templatesDir: resolve(options.templates),
+        tmpDir,
+      },
+    });
   }
 }

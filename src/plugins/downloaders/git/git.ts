@@ -1,10 +1,13 @@
 import simpleGit, { SimpleGit } from 'simple-git';
 import { resolve } from 'path';
-import { Logger } from '../../../logger/logger';
-import { ISource } from '../../../models/source';
-import { ISourceDownloader } from '../source';
-import { IVersion } from '../../../models/version';
-import { IDocumentation } from '../../../models/documentation';
+import {
+  Logger,
+  ISource,
+  ISourceDownloader,
+  IVersion,
+  IDocumentation,
+  IPluginEntry,
+} from '@lib';
 
 /**
  * For test purpose only
@@ -44,3 +47,9 @@ export class GitSourceDownloader implements ISourceDownloader {
     return source.options.branch || 'master';
   }
 }
+
+export default {
+  class: GitSourceDownloader,
+  sourceType: 'git',
+  type: 'downloader',
+} as IPluginEntry;

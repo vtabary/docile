@@ -1,4 +1,4 @@
-import { ISource } from '../../models/source';
+import { ISource } from '../../../models/source';
 
 export type ISourceConfiguration<
   T extends Record<string, unknown> = { [key: string]: unknown },

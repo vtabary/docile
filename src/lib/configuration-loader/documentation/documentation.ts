@@ -1,6 +1,5 @@
 import { IDocumentation } from '../../models/documentation';
-import { VersionBuilder } from '../version/version';
-import { IVersionConfiguration } from '../version/version';
+import { VersionBuilder, IVersionConfiguration } from './version/version';
 
 export interface IDocumentationConfiguration {
   label?: string;

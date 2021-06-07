@@ -1,14 +1,21 @@
 import { MockedLogger } from '../../logger/logger.mock';
-import { SourceDownloader } from './source';
+import { PluginRegistry } from '../../plugin-registry/plugin-registry';
+import { ISourceDownloader, SourceDownloader } from './source';
 
 describe('SourceDownloader', () => {
-  let options: { logger: MockedLogger; cwd: string; downloadDir: string };
+  let options: {
+    logger: MockedLogger;
+    cwd: string;
+    downloadDir: string;
+    downloaders: PluginRegistry<ISourceDownloader>;
+  };
 
   beforeEach(() => {
     options = {
       logger: new MockedLogger(),
       cwd: '/some',
       downloadDir: '.tmp',
+      downloaders: new PluginRegistry(),
     };
   });
 

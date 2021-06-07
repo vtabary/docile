@@ -1,6 +1,4 @@
-import { MockedLogger } from '../../../logger/logger.mock';
-import { IDocumentation } from '../../../models/documentation';
-import { IVersion } from '../../../models/version';
+import { MockedLogger, IDocumentation, IVersion } from '@lib';
 import { ILocalSource, LocalSourceDownloader, WRAPPERS } from './local';
 
 describe('LocalSourceDownloader', () => {

@@ -1,1 +1,1 @@
-// No exports for now
+export * from './lib';

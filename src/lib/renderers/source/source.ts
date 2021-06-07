@@ -1,12 +1,32 @@
 import { basename, resolve } from 'path';
-import { listFiles } from '../../helpers/file/file';
+import { listFiles, readFile, writeFile } from '../../helpers/file/file';
+import { RendererHelper } from '../../helpers/renderer/renderer';
+import { Logger } from '../../logger/logger';
 import { IDocumentation } from '../../models/documentation';
 import { ISource } from '../../models/source';
 import { IVersion } from '../../models/version';
-import { MarkdownRenderer } from '../engines/mardown/markdown';
-import { TemplateRenderer } from '../template/template';
+import { MissingRenderer } from './error/error';
+
+export interface ITemplateRenderer {
+  render(
+    content: string,
+    options: {
+      baseUrl: string;
+      data?: { [key: string]: unknown };
+    }
+  ): Promise<string>;
+}
 
 export class SourceRenderer {
+  private defaultRenderer = new MissingRenderer(this.options);
+
+  constructor(
+    private options: {
+      renderer: RendererHelper;
+      logger: Logger;
+    }
+  ) {}
+
   public async render(
     source: ISource,
     options: {
@@ -14,52 +34,67 @@ export class SourceRenderer {
       version: IVersion;
       from: string;
       to: string;
-      templatesDir: string;
+      baseUrl: string;
     }
   ): Promise<void> {
     const toDir = resolve(options.to, source.id);
     const fromDir = resolve(options.from, source.id);
-    const mdFiles = await listFiles(fromDir, ['*.md']);
+    const mdFiles = await listFiles(
+      fromDir,
+      this.options.renderer.getExtensions().map((key) => `*.${key}`)
+    );
 
     await Promise.all(
       mdFiles.map((md) =>
         this.renderFile(md, {
           documentation: options.documentation,
           version: options.version,
-          templatesDir: options.templatesDir,
+          templateDir: options.templateDir,
           to: toDir,
           from: fromDir,
+          baseUrl: options.baseUrl,
         })
       )
     );
   }
 
-  private renderFile(
+  private async renderFile(
     filePath: string,
     options: {
       documentation: IDocumentation;
       version: IVersion;
       from: string;
       to: string;
-      templatesDir: string;
+      templateDir: string;
+      baseUrl: string;
     }
   ): Promise<void> {
-    return new MarkdownRenderer()
-      .render(filePath, {
+    const docContent = await this.findRendererFor(filePath).render(
+      await readFile(filePath),
+      {
         baseUrl: '/',
-      })
-      .then((markdown) =>
-        new TemplateRenderer().render(
-          resolve(options.templatesDir, 'page.html'),
-          options.to,
-          {
-            data: {
-              documentation: options.documentation,
-              content: markdown,
-            },
-            fileName: basename(filePath, '.md') + '.html',
-          }
-        )
-      );
+        templateDir: options.templateDir,
+      }
+    );
+
+    const pageContent = await this.findRendererFor('page.html').render(
+      await readFile(resolve(options.templateDir, 'page.html')),
+      {
+        data: {
+          documentation: options.documentation,
+          content: docContent,
+        },
+        baseUrl: '/',
+        templateDir: options.templateDir,
+      }
+    );
+
+    await writeFile(options.to, pageContent);
+  }
+
+  private findRendererFor(filepath: string): ITemplateRenderer {
+    return (
+      this.options.renderers.get(basename(filepath)) || this.defaultRenderer
+    );
   }
 }

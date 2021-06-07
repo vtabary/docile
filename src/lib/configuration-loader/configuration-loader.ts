@@ -7,6 +7,11 @@ import {
   DocumentationBuilder,
   IDocumentationConfiguration,
 } from './documentation/documentation';
+import { PluginRegistry } from '../plugin-registry/plugin-registry';
+import { ITemplateRenderer } from '../renderers/source/source';
+import { ISourceDownloader } from '../downloaders/source/source';
+import { PluginsBuilder } from './plugins/plugins';
+import { Logger } from '../logger/logger';
 
 /**
  * For test purpose only
@@ -15,36 +20,59 @@ export const WRAPPERS = {
   findUp,
 };
 
+export interface IConfiguration {
+  documentation: IDocumentationConfiguration;
+  plugins?: string[];
+}
+
 export class ConfigurationLoader {
+  constructor(private options: { logger: Logger }) {}
+
   /**
    * Read the YAML configuration file and parse it to return a Documentation object with its context
    * @param options.projectDir the current working directory used as a reference in the context in case of relative paths
    */
-  public async load(options: { projectDir: string }): Promise<IDocumentation> {
+  public async load(options: {
+    projectDir: string;
+    downloadDir: string;
+  }): Promise<{
+    documentation: IDocumentation;
+    plugins: {
+      renderers: PluginRegistry<ITemplateRenderer>;
+      downloaders: PluginRegistry<ISourceDownloader>;
+    };
+  }> {
     const configurationPath = await this.getConfigutationFilePath(options);
-    const documentation = await this.readFile(configurationPath);
-    const builder = new DocumentationBuilder();
+    const configuration = await this.readFile(configurationPath);
+    const documentationBuilder = new DocumentationBuilder();
 
-    if (!builder.validate(documentation)) {
+    if (!documentationBuilder.validate(configuration.documentation)) {
       throw new Error('Invalid configuration');
     }
 
-    return builder.build(documentation);
+    return {
+      documentation: documentationBuilder.build(configuration.documentation),
+      plugins: await new PluginsBuilder().build(configuration.plugins || [], {
+        cwd: options.projectDir,
+        downloadDir: options.downloadDir,
+        logger: this.options.logger,
+      }),
+    };
   }
 
   /**
    * Read and parse the YAML configuration file, or return an empty object when the parsing failed
    * @param path the configuration file path
    */
-  private async readFile(path: string): Promise<IDocumentationConfiguration> {
+  private async readFile(path: string): Promise<IConfiguration> {
     const data = await promises.readFile(path, { encoding: 'utf-8' });
     try {
       const parsedData = yamlLoad(data, { filename: path });
       return typeof parsedData === 'object'
-        ? (parsedData as IDocumentationConfiguration)
-        : { versions: {} };
+        ? (parsedData as IConfiguration)
+        : { documentation: { versions: {} } };
     } catch (e) {
-      return { versions: {} };
+      return { documentation: { versions: {} } };
     }
   }
 

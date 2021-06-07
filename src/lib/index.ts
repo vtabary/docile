@@ -1,0 +1,9 @@
+export { IDownloader } from './downloaders/downloader';
+export { IDocumentation } from './models/documentation';
+export { IVersion } from './models/version';
+export { ISource } from './models/source';
+export { Logger } from './logger/logger';
+export { MockedLogger } from './logger/logger.mock';
+export { ISourceDownloader } from './downloaders/source/source';
+export { ITemplateRenderer } from './renderers/source/source';
+export { IPluginEntry } from './plugin-registry/plugin-registry';

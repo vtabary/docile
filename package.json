@@ -41,7 +41,7 @@
     "@types/fs-extra": "^8.1.0",
     "@types/jest": "^26.0.20",
     "@types/js-yaml": "^4.0.0",
-    "@types/marked": "^0.7.3",
+    "@types/marked": "^2.0.2",
     "@types/node": "^13.9.0",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
@@ -55,14 +55,14 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
-    "commander": "^4.1.1",
-    "download": "^7.1.0",
+    "commander": "^7.2.0",
+    "download": "^8.0.0",
     "eta": "^1.12.1",
-    "find-up": "^4.1.0",
-    "fs-extra": "^8.1.0",
+    "find-up": "^5.0.0",
+    "fs-extra": "^9.0.0",
     "globby": "^11.0.0",
     "js-yaml": "^4.0.0",
-    "marked": "^0.8.0",
+    "marked": "^2.0.0",
     "simple-git": "^2.0.0"
   },
   "husky": {

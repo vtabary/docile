@@ -16,6 +16,6 @@ export class ErrorSourceDownloader implements ISourceDownloader {
   }): Promise<void> {
     const errorMessage = `Can't copy the source "${data.source.id}"`;
     this.options.logger.error(errorMessage);
-    throw new Error(`Can't copy the source "${data.source.id}"`);
+    throw new Error(errorMessage);
   }
 }
